@@ -1,0 +1,41 @@
+version: "3.9"
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: mysql_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: yoursideanime
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin123
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+  web:
+    build: .
+    container_name: django_app
+    command: gunicorn YourSideAnime.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+    expose:
+      - "8000"
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx_server
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./certbot/www:/var/www/certbot
+    depends_on:
+      - web
+
+volumes:
+  mysql_data:
