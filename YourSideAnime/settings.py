@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-clj5m9fxjeijd6a)%y=5vryq8@3*vtyav!6*c-k5cc@jn9ak!f
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['yoursideanime.tech', 'www.yoursideanime.tech', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['yoursideanime.duckdns.org', 'localhost', '127.0.0.1']
 
 
 # Application definition
