@@ -1,0 +1,9 @@
+<div class="rating">
+    {% for i in "12345" %}
+        {% if forloop.counter <= rating %}
+            <span class="text-warning">★</span>
+        {% else %}
+            <span class="text-secondary">★</span>
+        {% endif %}
+    {% endfor %}
+</div>

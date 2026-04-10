@@ -1,10 +1,39 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<div class="container py-3">
 
-</body>
-</html>
+    <!-- LOGO -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <a href="/" class="d-flex align-items-center text-white text-decoration-none">
+            <img src="{% static 'img/logo.png' %}" alt="Logo" height="40">
+            <span class="ms-2 fw-bold">YourSideAnime</span>
+        </a>
+
+        <!-- ICONO PERFIL -->
+        <a href="{% url 'users:profile' %}">
+            <img src="{% static 'img/profile_icon.png' %}" alt="Perfil" height="35" class="rounded-circle">
+        </a>
+    </div>
+
+    <!-- MENÚ HAMBURGUESA -->
+    <div class="mb-3">
+        <button class="btn btn-outline-light w-100" type="button" data-bs-toggle="collapse" data-bs-target="#mobileMenu">
+            ☰ Menú
+        </button>
+
+        <div class="collapse mt-2" id="mobileMenu">
+            <div class="list-group">
+                <a href="{% url 'animes:home' %}" class="list-group-item list-group-item-action bg-dark text-white">Inicio</a>
+                <a href="{% url 'animes:viendo' %}" class="list-group-item list-group-item-action bg-dark text-white">Viendo</a>
+                <a href="{% url 'animes:vistos' %}" class="list-group-item list-group-item-action bg-dark text-white">Vistos</a>
+                <a href="{% url 'animes:dropeados' %}" class="list-group-item list-group-item-action bg-dark text-white">Dropeados</a>
+                <a href="{% url 'animes:whitelist' %}" class="list-group-item list-group-item-action bg-dark text-white">Whitelist</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- BARRA DE BÚSQUEDA -->
+    <form class="d-flex" method="GET" action="{% url 'animes:home' %}">
+        <input class="form-control me-2" type="search" name="q" placeholder="Buscar anime..." aria-label="Buscar">
+        <button class="btn btn-outline-light" type="submit">Buscar</button>
+    </form>
+
+</div>
