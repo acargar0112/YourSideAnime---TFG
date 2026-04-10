@@ -1,10 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<div class="d-flex align-items-center mb-4">
 
-</body>
-</html>
+    <img src="{{ user.profile.avatar_url }}"
+         alt="Avatar"
+         class="rounded-circle me-3"
+         height="70">
+
+    <div>
+        <h4 class="mb-1">{{ user.username }}</h4>
+
+        <p class="text-secondary small mb-0">
+            Viendo: {{ stats.viendo }} ·
+            Vistos: {{ stats.vistos }} ·
+            Dropeados: {{ stats.dropeados }}
+        </p>
+    </div>
+
+</div>
