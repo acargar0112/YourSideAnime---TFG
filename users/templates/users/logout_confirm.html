@@ -1,10 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-</body>
-</html>
+{% block title %}Cerrar sesión · YourSideAnime{% endblock %}
+
+{% block content %}
+
+<h2 class="text-center mb-4">¿Seguro que quieres cerrar sesión?</h2>
+
+<div class="d-flex justify-content-center gap-3">
+    <form method="POST">
+        {% csrf_token %}
+        <button class="btn btn-danger">Cerrar sesión</button>
+    </form>
+
+    <a href="{% url 'users:profile' %}" class="btn btn-secondary">Cancelar</a>
+</div>
+
+{% endblock %}
