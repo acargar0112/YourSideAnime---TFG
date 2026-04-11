@@ -218,6 +218,126 @@ form textarea:focus {
     background: #6c63ff !important;
 }
 
+.auth-body {
+    background-color: #0d0d0d;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.auth-container {
+    width: 100%;
+    max-width: 420px;
+    padding: 2.5rem;
+    border-radius: 18px;
+
+    background: rgba(20, 20, 20, 0.55);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 0 35px rgba(0,0,0,0.55);
+
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.auth-container h2 {
+    text-align: center;
+    color: #ffffff;
+    margin-bottom: 1.8rem;
+    font-size: 1.6rem;
+    font-weight: 600;
+}
+
+.auth-container form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.auth-container label {
+    color: #cccccc;
+    font-size: 0.9rem;
+}
+
+.auth-container input {
+    width: 100%;
+    padding: 0.9rem;
+    border-radius: 10px;
+    border: 1px solid #333;
+    background: #1f1f1f;
+    color: #fff;
+    transition: all 0.2s ease;
+    font-size: 0.95rem;
+}
+
+.auth-container input:focus {
+    border-color: #6c63ff;
+    box-shadow: 0 0 6px rgba(108, 99, 255, 0.4);
+    outline: none;
+}
+
+.auth-container button {
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(135deg, #6c63ff, #8a84ff);
+    border: none;
+    border-radius: 12px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-container button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(108, 99, 255, 0.45);
+}
+
+.auth-container button:active {
+    transform: scale(0.96);
+}
+
+.auth-container button::after {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.auth-container button:hover::after {
+    opacity: 1;
+}
+
+.auth-footer {
+    margin-top: 1.5rem;
+    text-align: center;
+    color: #aaa;
+}
+
+.auth-footer a {
+    color: #6c63ff;
+    font-weight: 500;
+}
+
+.auth-footer a:hover {
+    text-decoration: underline;
+}
 
 @media (max-width: 768px) {
     .anime-card img {
