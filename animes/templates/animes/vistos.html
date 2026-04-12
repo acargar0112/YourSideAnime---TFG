@@ -1,23 +1,15 @@
-{% extends "base.html" %}
+{% extends "animes/base_list.html" %}
 
 {% block title %}Vistos · YourSideAnime{% endblock %}
 
-{% block content %}
-
-<h2 class="mb-4">Vistos</h2>
-
-<div class="row g-4">
-    {% for anime in page_obj %}
-        <div class="col-6 col-md-4 col-lg-3">
-            {% include "components/anime_card.html" %}
-        </div>
-    {% empty %}
-        <p class="text-secondary">No tienes animes en esta categoría.</p>
+{% block rating %}
+<div class="stars mt-2 text-center">
+    {% for i in "12345" %}
+        {% if forloop.counter <= anime.rating %}
+            <span class="star filled">★</span>
+        {% else %}
+            <span class="star">★</span>
+        {% endif %}
     {% endfor %}
 </div>
-
-<div class="mt-4">
-    {% include "components/pagination.html" %}
-</div>
-
 {% endblock %}

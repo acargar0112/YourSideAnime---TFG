@@ -37,6 +37,10 @@ def profile_edit(request):
         bio = request.POST.get("bio")
         avatar = request.FILES.get("avatar")
 
+        if not email:
+            messages.error(request, "El email no puede estar vacío.")
+            return redirect("users:profile_edit")
+
         user.username = username
         user.email = email
         user.bio = bio

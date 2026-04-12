@@ -2,8 +2,31 @@ body {
     background-color: #0d0d0d;
     color: #ffffff;
     font-family: 'Inter', sans-serif;
-    padding-bottom: 70px;
 }
+
+footer {
+    background-color: white;
+    padding: 1.5rem 0;
+}
+
+.dropdown-menu {
+    background-color: #1a1a1a !important;
+    border: 1px solid #262626 !important;
+}
+
+.dropdown-item {
+    color: #ffffff !important;
+}
+
+.dropdown-item:hover {
+    background-color: #6c63ff !important;
+    color: #ffffff !important;
+}
+
+.dropdown-divider {
+    border-color: #333333 !important;
+}
+
 
 a {
     color: #6c63ff;
@@ -186,7 +209,6 @@ h1, h2, h3, h4, h5 {
 }
 
 
-
 form input,
 form select,
 form textarea {
@@ -339,9 +361,19 @@ form textarea:focus {
     text-decoration: underline;
 }
 
+.carousel-item img {
+    height: 380px;
+    object-fit: cover;
+    width: 100%;
+}
+
 @media (max-width: 768px) {
     .anime-card img {
         height: 220px;
+    }
+
+    body {
+        padding-bottom: 70px;
     }
 
     .profile-header img {

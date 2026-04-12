@@ -1,59 +1,61 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Mi Perfil · YourSideAnime{% endblock %}
 
 {% block content %}
 
-<div class="mb-4">
-    {% include "components/profile_header.html" %}
-</div>
-
-<div class="row text-center mb-5">
-
-    <div class="col-6 col-md-3 mb-3">
-        <div class="p-3 bg-dark rounded shadow-sm">
-            <h4 class="mb-1">{{ stats.viendo }}</h4>
-            <p class="text-secondary mb-0">Viendo</p>
-        </div>
-    </div>
-
-    <div class="col-6 col-md-3 mb-3">
-        <div class="p-3 bg-dark rounded shadow-sm">
-            <h4 class="mb-1">{{ stats.vistos }}</h4>
-            <p class="text-secondary mb-0">Vistos</p>
-        </div>
-    </div>
-
-    <div class="col-6 col-md-3 mb-3">
-        <div class="p-3 bg-dark rounded shadow-sm">
-            <h4 class="mb-1">{{ stats.dropeados }}</h4>
-            <p class="text-secondary mb-0">Dropeados</p>
-        </div>
-    </div>
-
-    <div class="col-6 col-md-3 mb-3">
-        <div class="p-3 bg-dark rounded shadow-sm">
-            <h4 class="mb-1">{{ stats.whitelist }}</h4>
-            <p class="text-secondary mb-0">Whitelist</p>
-        </div>
-    </div>
-
-</div>
-
-<h3 class="mb-3">Mis animes</h3>
-
 <div class="row g-4">
-    {% for anime in page_obj %}
-        <div class="col-6 col-md-4 col-lg-3">
-            {% include "components/anime_card.html" %}
-        </div>
-    {% empty %}
-        <p class="text-secondary">Todavía no tienes animes añadidos.</p>
-    {% endfor %}
-</div>
 
-<div class="mt-4">
-    {% include "components/pagination.html" %}
+    <!-- FOTO + EDITAR -->
+    <div class="col-12 d-flex align-items-center gap-4">
+
+        <img src="{% if request.user.avatar %}{{ request.user.avatar.url }}{% else %}{% static 'img/default_avatar.png' %}{% endif %}"
+         alt="Foto de perfil"
+         class="rounded-circle border"
+         style="width: 120px; height: 120px; object-fit: cover;">
+
+
+        <a href="{% url 'users:profile_edit' %}" class="btn btn-primary">
+            Editar perfil
+        </a>
+
+    </div>
+
+    <!-- NOMBRE -->
+    <div class="col-12">
+        <h2 class="fw-bold">{{ request.user.username }}</h2>
+    </div>
+
+    <!-- BIOGRAFÍA -->
+    <div class="col-12">
+        <p class="text-secondary">{{ request.user.bio|default:"Sin biografía." }}</p>
+    </div>
+
+    <!-- VISTOS RECIENTEMENTE -->
+    <div class="col-12 col-lg-6">
+        <div class="p-4 bg-dark border border-secondary rounded shadow-sm h-100">
+            <h3 class="fw-bold mb-3">Vistos recientemente</h3>
+
+            {% if recientes %}
+                {% for anime in recientes %}
+                    <p class="mb-2">{{ anime.titulo }}</p>
+                {% endfor %}
+            {% else %}
+                <p class="text-secondary">No has visto nada recientemente.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- ESTADÍSTICAS -->
+    <div class="col-12 col-lg-6">
+        <div class="p-4 bg-dark border border-secondary rounded shadow-sm h-100">
+            <h3 class="fw-bold mb-3">Estadísticas</h3>
+
+            <p class="text-secondary">Próximamente: estadísticas del usuario.</p>
+        </div>
+    </div>
+
 </div>
 
 {% endblock %}
