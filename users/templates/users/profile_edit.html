@@ -1,34 +1,61 @@
 {% extends "base.html" %}
+{% load static %}
 
-{% block title %}Editar perfil · YourSideAnime{% endblock %}
+{% block title %}Editar Perfil · YourSideAnime{% endblock %}
 
 {% block content %}
 
-<h2 class="mb-4 text-center">Editar perfil</h2>
+<div class="row g-4">
 
-<form method="POST" class="mx-auto" style="max-width: 500px;">
-    {% csrf_token %}
+    <div class="col-12 col-md-4 d-flex flex-column align-items-center">
 
-    <div class="mb-3">
-        <label class="form-label">Nombre de usuario</label>
-        <input type="text" name="username" value="{{ user.username }}" class="form-control" required>
+        <img src="{% if request.user.avatar %}{{ request.user.avatar.url }}{% else %}{% static 'img/default_avatar.png' %}{% endif %}"
+             alt="Foto de perfil"
+             class="rounded-circle border"
+             style="width: 140px; height: 140px; object-fit: cover;">
+
     </div>
 
-    <div class="mb-3">
-        <label class="form-label">Correo</label>
-        <input type="email" name="email" value="{{ user.email }}" class="form-control">
+    <div class="col-12 col-md-8">
+
+        <div class="p-4 bg-dark border border-secondary rounded">
+
+            <form method="POST" enctype="multipart/form-data" class="d-flex flex-column gap-3">
+                {% csrf_token %}
+
+                <label class="btn btn-secondary mt-3 w-50">
+                    Cambiar foto
+                    <input type="file" name="avatar" class="d-none" id="avatarInput">
+                </label>
+
+                <div>
+                    <label class="form-label">Nombre</label>
+                    <input type="text" name="username" class="form-control"
+                           value="{{ request.user.username }}">
+                </div>
+
+                <div>
+                    <label class="form-label">Email</label>
+                    <input type="email" name="email" class="form-control"
+                           value="{{ request.user.email }}">
+                </div>
+
+                <div>
+                    <label class="form-label">Biografía</label>
+                    <textarea name="bio" rows="4" class="form-control">{{ request.user.bio }}</textarea>
+                </div>
+
+                <div class="d-flex gap-3 mt-3">
+                    <button class="btn btn-primary px-4">Guardar</button>
+                    <a href="{% url 'users:profile' %}" class="btn btn-secondary px-4">Cancelar</a>
+                </div>
+
+            </form>
+
+        </div>
+
     </div>
 
-    <div class="mb-3">
-        <label class="form-label">Avatar (URL)</label>
-        <input type="text" name="avatar" value="{{ profile.avatar }}" class="form-control">
-    </div>
-
-    <button class="btn btn-primary w-100 mt-3">Guardar cambios</button>
-
-    <p class="text-center mt-3">
-        <a href="{% url 'users:profile' %}">Volver al perfil</a>
-    </p>
-</form>
+</div>
 
 {% endblock %}

@@ -14,10 +14,64 @@
             <button class="btn btn-outline-light" type="submit">Buscar</button>
         </form>
 
-        <div class="d-flex align-items-center">
-            <a href="{% url 'users:profile' %}" class="text-white">
-                <img src="{% static 'img/profile_icon.png' %}" alt="Perfil" height="35" class="rounded-circle">
+        <div class="dropdown">
+
+            <a class="d-flex align-items-center text-white dropdown-toggle" href="#" role="button"
+               data-bs-toggle="dropdown" aria-expanded="false">
+
+                <img src="{% if request.user.avatar %}{{ request.user.avatar.url }}{% else %}{% static 'img/default_avatar.png' %}{% endif %}"
+                 alt="Perfil"
+                 height="35"
+                 class="rounded-circle"
+                 style="width: 35px; height: 35px; object-fit: cover;">
+
             </a>
+
+            <ul class="dropdown-menu dropdown-menu-end bg-dark border-secondary">
+
+                <li>
+                    <a class="dropdown-item text-white" href="{% url 'users:profile' %}">
+                        Mi Perfil
+                    </a>
+                </li>
+
+                <li>
+                    <a class="dropdown-item text-white" href="{% url 'animes:viendo' %}">
+                        Viendo
+                    </a>
+                </li>
+
+                <li>
+                    <a class="dropdown-item text-white" href="{% url 'animes:vistos' %}">
+                        Vistos
+                    </a>
+                </li>
+
+                <li>
+                    <a class="dropdown-item text-white" href="{% url 'animes:dropeados' %}">
+                        Dropeados
+                    </a>
+                </li>
+
+                <li>
+                    <a class="dropdown-item text-white" href="{% url 'animes:whitelist' %}">
+                        Whitelist
+                    </a>
+                </li>
+
+                <li><hr class="dropdown-divider border-secondary"></li>
+
+                <li>
+                    <form action="{% url 'users:logout' %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="dropdown-item text-danger">
+                            Cerrar sesión
+                        </button>
+                    </form>
+                </li>
+
+            </ul>
+
         </div>
 
     </div>

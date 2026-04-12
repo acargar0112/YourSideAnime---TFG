@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ page_title }} · YourSideAnime{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    <div class="d-flex align-items-center gap-3 mb-4">
+
+        <img src="{% if request.user.avatar %}{{ request.user.avatar.url }}{% else %}{% static 'img/default_avatar.png' %}{% endif %}"
+             class="rounded-circle"
+             style="width: 60px; height: 60px; object-fit: cover;">
+
+        <h2 class="fw-bold m-0">{{ request.user.username }}</h2>
+    </div>
+
+    <div class="d-flex gap-4 mb-4">
+        <a href="{% url 'animes:viendo' %}" class="{% if active_tab == 'viendo' %}fw-bold text-white{% else %}text-secondary{% endif %}">Viendo</a>
+        <a href="{% url 'animes:vistos' %}" class="{% if active_tab == 'vistos' %}fw-bold text-white{% else %}text-secondary{% endif %}">Vistos</a>
+        <a href="{% url 'animes:dropeados' %}" class="{% if active_tab == 'dropeados' %}fw-bold text-white{% else %}text-secondary{% endif %}">Dropeados</a>
+        <a href="{% url 'animes:whitelist' %}" class="{% if active_tab == 'whitelist' %}fw-bold text-white{% else %}text-secondary{% endif %}">Whitelist</a>
+    </div>
+
+    <div class="row g-4">
+
+        {% if animes %}
+            {% for anime in animes %}
+                <div class="col-6 col-md-4 col-lg-2">
+
+                    <a href="{% url 'animes:anime_detail' anime.id %}" class="text-decoration-none">
+
+                        <div class="anime-card">
+
+                            <img src="{{ anime.imagen_url }}"
+                                 class="w-100 rounded"
+                                 style="height: 180px; object-fit: cover;">
+
+                            {% block rating %}{% endblock %}
+
+                        </div>
+
+                    </a>
+
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-secondary">No tienes animes en esta categoría.</p>
+        {% endif %}
+
+    </div>
+
+    <div class="text-center mt-4">
+        <button class="btn btn-outline-light px-4">Página siguiente</button>
+    </div>
+
+</div>
+
+{% endblock %}

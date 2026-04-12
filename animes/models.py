@@ -33,8 +33,7 @@ class Anime(models.Model):
     fecha_inicio = models.DateField(blank=True, null=True)
     fecha_fin = models.DateField(blank=True, null=True)
 
-    external_id = models.CharField(max_length=100, blank=True, null=True)
-    source = models.CharField(max_length=50, blank=True, null=True)
+    api_id = models.PositiveIntegerField(blank=True, null=True)
 
     creado = models.DateTimeField(auto_now_add=True)
     actualizado = models.DateTimeField(auto_now=True)

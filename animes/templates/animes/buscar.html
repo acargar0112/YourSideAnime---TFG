@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4 text-white">
+
+    <h2 class="mb-4">Resultados para "{{ query }}"</h2>
+
+    {% if resultados %}
+    <div class="row g-4">
+
+        {% for anime in resultados %}
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+
+            <div class="card bg-dark text-white h-100 border-secondary">
+
+                <img src="{{ anime.imagen }}" class="card-img-top" style="height: 300px; object-fit: cover;">
+
+                <div class="card-body d-flex flex-column">
+
+                    <h5 class="card-title">{{ anime.titulo }}</h5>
+
+                    <p class="text-secondary small mb-3">
+                        Episodios: {{ anime.episodios|default:"?" }}
+                    </p>
+
+                    <button class="btn btn-outline-light mt-auto"
+                        data-bs-toggle="modal"
+                        data-bs-target="#addAnimeModal"
+                        data-titulo="{{ anime.titulo }}"
+                        data-apiid="{{ anime.api_id }}"
+                        data-imagen="{{ anime.imagen }}"
+                        data-episodios="{{ anime.episodios }}">
+                        Añadir
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+        {% endfor %}
+
+    </div>
+
+    {% else %}
+        <p class="text-secondary">No se encontraron resultados.</p>
+    {% endif %}
+
+</div>
+
+{% include "animes/add_anime.html" %}
+{% endblock %}

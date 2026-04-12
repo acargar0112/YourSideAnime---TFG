@@ -9,7 +9,11 @@
         </a>
 
         <a href="{% url 'users:profile' %}">
-            <img src="{% static 'img/profile_icon.png' %}" alt="Perfil" height="35" class="rounded-circle">
+            <img src="{% if request.user.avatar %}{{ request.user.avatar.url }}{% else %}{% static 'img/default_avatar.png' %}{% endif %}"
+                 alt="Perfil"
+                 height="35"
+                 class="rounded-circle"
+                 style="width: 35px; height: 35px; object-fit: cover;">
         </a>
     </div>
 

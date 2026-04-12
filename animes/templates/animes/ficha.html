@@ -1,41 +1,89 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}{{ anime.titulo }} · YourSideAnime{% endblock %}
 
 {% block content %}
 
-<div class="row g-4">
+<div class="container py-4">
 
-    <div class="col-12 col-md-4">
-        <img src="{{ anime.imagen_url }}" alt="{{ anime.titulo }}" class="img-fluid rounded shadow">
+    <div class="row g-4">
+
+        <div class="col-12 col-md-4">
+            <img src="{{ anime.imagen_url }}"
+                 class="w-100 rounded"
+                 style="object-fit: cover; max-height: 450px;">
+        </div>
+
+        <div class="col-12 col-md-8 text-white">
+
+            <h1 class="fw-bold">{{ anime.titulo }}</h1>
+
+            {% if api_data.title_jp %}
+                <p class="text-secondary fst-italic">{{ api_data.title_jp }}</p>
+            {% endif %}
+
+            <div class="my-2">
+                {% for i in "12345" %}
+                    {% if forloop.counter <= anime.rating %}
+                        <span class="text-warning fs-4">★</span>
+                    {% else %}
+                        <span class="text-secondary fs-4">★</span>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            {% if api_data.score %}
+                <p class="text-info">Score MAL: {{ api_data.score }}</p>
+            {% endif %}
+
+            <a href="{% url 'animes:edit' anime.id %}" class="btn btn-outline-light mt-2">
+                Editar anime
+            </a>
+
+        </div>
+
     </div>
 
-    <div class="col-12 col-md-8">
+    <div class="mt-4">
+        <h4 class="text-white">Descripción</h4>
+        <p class="text-secondary">{{ anime.sinopsis }}</p>
+    </div>
 
-        <h2 class="mb-3">{{ anime.titulo }}</h2>
+    {% if api_data %}
+    <div class="mt-4">
+        <h4 class="text-white">Información adicional</h4>
 
-        <p class="mb-2">
-            <strong>Estado:</strong>
-            <span class="badge bg-primary text-uppercase">{{ anime.estado }}</span>
-        </p>
+        <ul class="text-secondary">
+            {% if api_data.episodes %}
+                <li>Episodios: {{ api_data.episodes }}</li>
+            {% endif %}
+            {% if api_data.year %}
+                <li>Año: {{ api_data.year }}</li>
+            {% endif %}
+            {% if api_data.status %}
+                <li>Estado: {{ api_data.status }}</li>
+            {% endif %}
+            {% if api_data.genres %}
+                <li>Géneros: {{ api_data.genres|join:", " }}</li>
+            {% endif %}
+        </ul>
+    </div>
 
-        <div class="mb-3">
-            {% include "components/rating.html" %}
-        </div>
+    {% if api_data.trailer %}
+    <div class="mt-4">
+        <h4 class="text-white">Trailer</h4>
+        <iframe width="100%" height="315"
+                src="{{ api_data.trailer }}"
+                frameborder="0"
+                allowfullscreen>
+        </iframe>
+    </div>
+    {% endif %}
+    {% endif %}
 
-        <div class="d-flex gap-2 mt-4">
-            <a href="#" class="btn btn-success">Marcar como visto</a>
-            <a href="#" class="btn btn-warning">Mover a viendo</a>
-            <a href="#" class="btn btn-danger">Eliminar</a>
-        </div>
-
-        {% if anime.descripcion %}
-            <div class="mt-4">
-                <h5>Descripción</h5>
-                <p class="text-secondary">{{ anime.descripcion }}</p>
-            </div>
-        {% endif %}
-
+    <div class="mt-4">
+        <a href="javascript:history.back()" class="btn btn-outline-secondary">Volver</a>
     </div>
 
 </div>
