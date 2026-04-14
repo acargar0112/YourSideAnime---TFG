@@ -29,19 +29,54 @@
             {% for anime in animes %}
                 <div class="col-6 col-md-4 col-lg-2">
 
-                    <a href="{% url 'animes:anime_detail' anime.id %}" class="text-decoration-none">
+                    <div class="anime-card position-relative">
 
-                        <div class="anime-card">
+                        <img src="{{ anime.imagen_url }}"
+                             class="w-100 rounded"
+                             style="height: 180px; object-fit: cover;">
 
-                            <img src="{{ anime.imagen_url }}"
-                                 class="w-100 rounded"
-                                 style="height: 180px; object-fit: cover;">
+                        <div class="anime-overlay d-flex flex-column justify-content-center align-items-center gap-2">
 
-                            {% block rating %}{% endblock %}
+                            <!-- BOTÓN VER -->
+                            <button class="btn btn-primary btn-sm"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#viewAnimeModal"
+                                    data-id="{{ anime.id }}"
+                                    data-titulo="{{ anime.titulo }}"
+                                    data-imagen="{{ anime.imagen_url }}"
+                                    data-estado="{{ anime.estado }}"
+                                    data-rating="{{ anime.rating }}"
+                                    data-episodios_totales="{{ anime.episodios_totales }}"
+                                    data-episodios_vistos="{{ anime.episodios_vistos }}"
+                                    data-fecha_inicio="{{ anime.fecha_inicio|date:'Y-m-d' }}"
+                                    data-fecha_fin="{{ anime.fecha_fin|date:'Y-m-d' }}">
+                                Ver
+                            </button>
+
+                            <!-- BOTÓN EDITAR -->
+                            <button class="btn btn-light btn-sm"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#editAnimeModal"
+                                    data-id="{{ anime.id }}"
+                                    data-titulo="{{ anime.titulo }}"
+                                    data-imagen="{{ anime.imagen_url }}"
+                                    data-estado="{{ anime.estado }}"
+                                    data-rating="{{ anime.rating }}"
+                                    data-episodios_totales="{{ anime.episodios_totales }}"
+                                    data-episodios_vistos="{{ anime.episodios_vistos }}"
+                                    data-fecha_inicio="{{ anime.fecha_inicio|date:'Y-m-d' }}"
+                                    data-fecha_fin="{{ anime.fecha_fin|date:'Y-m-d' }}"
+                                    data-return-url="{{ request.path }}">
+                                Editar
+                            </button>
 
                         </div>
 
-                    </a>
+                        <div class="w-100 text-center mt-2">
+                            {% block rating %}{% endblock %}
+                        </div>
+
+                    </div>
 
                 </div>
             {% endfor %}
@@ -56,5 +91,8 @@
     </div>
 
 </div>
+
+{% include "animes/edit_anime.html" %}
+{% include "animes/view_anime.html" %}
 
 {% endblock %}

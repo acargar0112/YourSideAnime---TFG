@@ -1,42 +1,42 @@
 {% load static %}
 
-<div class="modal fade" id="addAnimeModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="editAnimeModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content bg-dark text-white">
 
             <div class="modal-header border-secondary">
-                <h5 class="modal-title">Añadir Anime</h5>
+                <h5 class="modal-title">Editar Anime</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
 
             <div class="modal-body">
 
-                <form id="addAnimeForm" method="post" action="{% url 'animes:add' %}">
+                <form id="editAnimeForm" method="post">
                     {% csrf_token %}
 
-                    <input type="hidden" name="api_id" id="api_id">
-                    <input type="hidden" name="imagen_url" id="imagen_url">
-                    <input type="hidden" name="episodios_totales" id="episodios_totales">
+                    <input type="hidden" name="imagen_url" id="edit_imagen_url">
+                    <input type="hidden" name="episodios_totales" id="edit_episodios_totales">
+                    <input type="hidden" name="return_url" id="edit_return_url">
 
                     <div class="row g-4">
 
                         <div class="col-12 col-md-4 text-center">
 
                             <div class="bg-secondary rounded" style="height: 220px;">
-                                <img id="previewImagen"
+                                <img id="edit_previewImagen"
                                      src="{% static 'img/default_anime.png' %}"
                                      class="w-100 h-100 rounded"
                                      style="object-fit: cover;">
                             </div>
 
-                            <div id="ratingSection" class="mt-3 d-none">
+                            <div id="edit_ratingSection" class="mt-3 d-none">
                                 <label>Rating:</label>
-                                <div id="ratingStars" class="fs-3">
+                                <div id="edit_ratingStars" class="fs-3">
                                     {% for i in "12345" %}
-                                        <span class="star text-secondary" data-value="{{ forloop.counter }}">★</span>
+                                        <span class="edit-star text-secondary" data-value="{{ forloop.counter }}">★</span>
                                     {% endfor %}
                                 </div>
-                                <input type="hidden" name="rating" id="ratingInput" value="0">
+                                <input type="hidden" name="rating" id="edit_ratingInput" value="0">
                             </div>
 
                         </div>
@@ -44,13 +44,12 @@
                         <div class="col-12 col-md-8">
 
                             <p class="text-white mb-1 fs-4">
-                                <strong id="tituloTexto"></strong>
+                                <strong id="edit_tituloTexto"></strong>
                             </p>
-                            <input type="hidden" name="titulo" id="titulo">
-
+                            <input type="hidden" name="titulo" id="edit_titulo">
 
                             <label class="form-label mt-3">Estado</label>
-                            <select name="estado" id="estadoSelect"
+                            <select name="estado" id="edit_estado"
                                     class="form-select bg-dark text-white border-secondary">
                                 <option value="viendo">Viendo</option>
                                 <option value="visto">Visto</option>
@@ -58,23 +57,23 @@
                                 <option value="whitelist">Whitelist</option>
                             </select>
 
-                            <div id="fechasSection" class="mt-3">
-                                <label class="form-label">Fecha/s</label>
+                            <div id="edit_fechasSection" class="mt-3">
+                                <label class="form-label">Fechas</label>
                                 <div class="d-flex gap-2">
                                     <input type="date" name="fecha_inicio"
-                                           id="fecha_inicio"
+                                           id="edit_fecha_inicio"
                                            class="form-control bg-dark text-white border-secondary">
 
                                     <input type="date" name="fecha_fin"
-                                           id="fecha_fin"
+                                           id="edit_fecha_fin"
                                            class="form-control bg-dark text-white border-secondary">
                                 </div>
                             </div>
 
-                            <div id="episodiosSection" class="mt-3">
+                            <div id="edit_episodiosSection" class="mt-3">
                                 <label class="form-label">Episodios vistos</label>
                                 <input type="number" name="episodios_vistos"
-                                       id="episodios_vistos"
+                                       id="edit_episodios_vistos"
                                        class="form-control bg-dark text-white border-secondary"
                                        min="0">
                             </div>
@@ -88,8 +87,16 @@
             </div>
 
             <div class="modal-footer border-secondary">
+
+                <button type="submit" form="editAnimeForm" class="btn btn-light">Guardar cambios</button>
+
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="submit" form="addAnimeForm" class="btn btn-light">Guardar</button>
+
+                <form id="deleteAnimeForm" method="post" class="m-0">
+                    {% csrf_token %}
+                    <input type="hidden" name="return_url" id="delete_return_url">
+                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                </form>
             </div>
 
         </div>
@@ -99,28 +106,28 @@
 <script>
 document.addEventListener("DOMContentLoaded", () => {
 
-    const stars = document.querySelectorAll("#ratingStars .star");
-    const ratingInput = document.getElementById("ratingInput");
+    const editStars = document.querySelectorAll("#edit_ratingStars .edit-star");
+    const editRatingInput = document.getElementById("edit_ratingInput");
 
-    stars.forEach(star => {
+    editStars.forEach(star => {
         star.addEventListener("click", () => {
             const value = star.dataset.value;
-            ratingInput.value = value;
+            editRatingInput.value = value;
 
-            stars.forEach(s => {
+            editStars.forEach(s => {
                 s.classList.toggle("text-warning", s.dataset.value <= value);
                 s.classList.toggle("text-secondary", s.dataset.value > value);
             });
         });
     });
 
-    const estadoSelect = document.getElementById("estadoSelect");
-    const ratingSection = document.getElementById("ratingSection");
-    const fechasSection = document.getElementById("fechasSection");
-    const fechaFin = document.getElementById("fecha_fin");
-    const episodiosSection = document.getElementById("episodiosSection");
+    const estadoSelect = document.getElementById("edit_estado");
+    const ratingSection = document.getElementById("edit_ratingSection");
+    const fechasSection = document.getElementById("edit_fechasSection");
+    const fechaFin = document.getElementById("edit_fecha_fin");
+    const episodiosSection = document.getElementById("edit_episodiosSection");
 
-    function actualizarCampos() {
+    function actualizarCamposEdit() {
         const estado = estadoSelect.value;
 
         ratingSection.classList.add("d-none");
@@ -144,25 +151,41 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    estadoSelect.addEventListener("change", actualizarCampos);
+    estadoSelect.addEventListener("change", actualizarCamposEdit);
 
-    const modal = document.getElementById("addAnimeModal");
+    const editModal = document.getElementById("editAnimeModal");
 
-    modal.addEventListener("show.bs.modal", event => {
+    editModal.addEventListener("show.bs.modal", event => {
         const button = event.relatedTarget;
 
         const titulo = button.dataset.titulo;
 
-        document.getElementById("tituloTexto").textContent = titulo;
-        document.getElementById("titulo").value = titulo;
+        document.getElementById("edit_tituloTexto").textContent = titulo;
+        document.getElementById("edit_titulo").value = titulo;
+        document.getElementById("edit_estado").value = button.dataset.estado;
+        document.getElementById("edit_episodios_vistos").value = button.dataset.episodios_vistos;
+        document.getElementById("edit_imagen_url").value = button.dataset.imagen;
+        document.getElementById("edit_episodios_totales").value = button.dataset.episodios_totales;
+        document.getElementById("edit_previewImagen").src = button.dataset.imagen;
 
-        document.getElementById("api_id").value = button.dataset.apiid;
-        document.getElementById("imagen_url").value = button.dataset.imagen;
-        document.getElementById("episodios_totales").value = button.dataset.episodios;
+        const rating = button.dataset.rating;
+        editRatingInput.value = rating;
 
-        document.getElementById("previewImagen").src = button.dataset.imagen;
+        editStars.forEach(s => {
+            s.classList.toggle("text-warning", s.dataset.value <= rating);
+            s.classList.toggle("text-secondary", s.dataset.value > rating);
+        });
 
-        actualizarCampos();
+        document.getElementById("edit_fecha_inicio").value = button.dataset.fecha_inicio || "";
+        document.getElementById("edit_fecha_fin").value = button.dataset.fecha_fin || "";
+        document.getElementById("edit_return_url").value = button.dataset.returnUrl;
+        document.getElementById("delete_return_url").value = button.dataset.returnUrl;
+
+        document.getElementById("editAnimeForm").action = `/anime/${button.dataset.id}/edit/`;
+        document.getElementById("deleteAnimeForm").action = `/anime/${button.dataset.id}/delete/`;
+
+
+        actualizarCamposEdit();
     });
 
 });

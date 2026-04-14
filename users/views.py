@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from .models import CustomUser
 from .forms import CustomUserCreationForm
 from django.contrib import messages
+from animes.models import Anime
 
 
 def register(request):
@@ -24,7 +25,27 @@ def register(request):
 
 @login_required
 def profile(request):
-    return render(request, "users/profile.html", {"user": request.user})
+    user = request.user
+
+    total_vistos = Anime.objects.filter(user=user, estado="visto").count()
+    total_viendo = Anime.objects.filter(user=user, estado="viendo").count()
+    total_whitelist = Anime.objects.filter(user=user, estado="whitelist").count()
+    total_dropeados = Anime.objects.filter(user=user, estado="dropeado").count()
+
+    recientes = Anime.objects.filter(
+        user=user,
+        estado="visto",
+        fecha_fin__isnull=False
+    ).order_by("-fecha_fin")[:4]
+
+    return render(request, "users/profile.html", {
+        "user": user,
+        "recientes": recientes,
+        "total_vistos": total_vistos,
+        "total_viendo": total_viendo,
+        "total_whitelist": total_whitelist,
+        "total_dropeados": total_dropeados,
+    })
 
 
 @login_required

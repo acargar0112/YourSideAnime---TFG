@@ -1,0 +1,118 @@
+<div class="modal fade" id="viewAnimeModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content bg-dark text-white">
+
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title">Detalles del Anime</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="row g-4">
+
+                    <div class="col-12 col-md-4 text-center">
+                        <img id="view_imagen"
+                             src=""
+                             class="w-100 rounded"
+                             style="height: 220px; object-fit: cover;">
+                    </div>
+
+                    <div class="col-12 col-md-8">
+
+                        <h3 id="view_titulo" class="fw-bold"></h3>
+
+                        <p id="view_estado_section" class="mb-1">
+                            <strong>Estado:</strong> <span id="view_estado"></span>
+                        </p>
+
+                        <p id="view_rating_section" class="mb-1">
+                            <strong>Rating:</strong> <span id="view_rating"></span>
+                        </p>
+
+                        <p id="view_episodios_section" class="mb-1">
+                            <strong>Episodios vistos:</strong>
+                            <span id="view_episodios_vistos"></span> /
+                            <span id="view_episodios_totales"></span>
+                        </p>
+
+                        <p id="view_fecha_inicio_section" class="mb-1">
+                            <strong>Fecha inicio:</strong> <span id="view_fecha_inicio"></span>
+                        </p>
+
+                        <p id="view_fecha_fin_section" class="mb-1">
+                            <strong>Fecha fin:</strong> <span id="view_fecha_fin"></span>
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    const viewModal = document.getElementById("viewAnimeModal");
+
+    viewModal.addEventListener("show.bs.modal", event => {
+        const button = event.relatedTarget;
+
+        const estado = button.dataset.estado;
+
+        const ratingSection = document.getElementById("view_rating_section");
+        const episodiosSection = document.getElementById("view_episodios_section");
+        const fechaInicioSection = document.getElementById("view_fecha_inicio_section");
+        const fechaFinSection = document.getElementById("view_fecha_fin_section");
+
+        ratingSection.classList.remove("d-none");
+        episodiosSection.classList.remove("d-none");
+        fechaInicioSection.classList.remove("d-none");
+        fechaFinSection.classList.remove("d-none");
+
+        if (estado === "viendo") {
+            ratingSection.classList.add("d-none");
+            fechaFinSection.classList.add("d-none");
+        }
+
+        if (estado === "visto") {
+            episodiosSection.classList.add("d-none");
+        }
+
+        if (estado === "dropeado") {
+            ratingSection.classList.add("d-none");
+            fechaFinSection.classList.add("d-none");
+        }
+
+        if (estado === "whitelist") {
+            ratingSection.classList.add("d-none");
+            episodiosSection.classList.add("d-none");
+            fechaInicioSection.classList.add("d-none");
+            fechaFinSection.classList.add("d-none");
+        }
+
+        document.getElementById("view_imagen").src = button.dataset.imagen;
+        document.getElementById("view_titulo").textContent = button.dataset.titulo;
+        document.getElementById("view_estado").textContent = estado;
+
+        const rating = button.dataset.rating;
+        document.getElementById("view_rating").textContent =
+            rating > 0 ? rating + " / 5" : "—";
+
+        document.getElementById("view_episodios_vistos").textContent = button.dataset.episodios_vistos;
+        document.getElementById("view_episodios_totales").textContent = button.dataset.episodios_totales;
+
+        document.getElementById("view_fecha_inicio").textContent = button.dataset.fecha_inicio || "—";
+        document.getElementById("view_fecha_fin").textContent = button.dataset.fecha_fin || "—";
+    });
+
+});
+</script>

@@ -7,7 +7,6 @@
 
 <div class="row g-4">
 
-    <!-- FOTO + EDITAR -->
     <div class="col-12 d-flex align-items-center gap-4">
 
         <img src="{% if request.user.avatar %}{{ request.user.avatar.url }}{% else %}{% static 'img/default_avatar.png' %}{% endif %}"
@@ -22,37 +21,46 @@
 
     </div>
 
-    <!-- NOMBRE -->
     <div class="col-12">
         <h2 class="fw-bold">{{ request.user.username }}</h2>
     </div>
 
-    <!-- BIOGRAFÍA -->
     <div class="col-12">
         <p class="text-secondary">{{ request.user.bio|default:"Sin biografía." }}</p>
     </div>
 
-    <!-- VISTOS RECIENTEMENTE -->
     <div class="col-12 col-lg-6">
         <div class="p-4 bg-dark border border-secondary rounded shadow-sm h-100">
             <h3 class="fw-bold mb-3">Vistos recientemente</h3>
 
             {% if recientes %}
-                {% for anime in recientes %}
-                    <p class="mb-2">{{ anime.titulo }}</p>
-                {% endfor %}
+                <div class="d-flex gap-3">
+                    {% for anime in recientes %}
+                        <div class="text-center">
+                            <img src="{{ anime.imagen_url }}"
+                                 class="rounded"
+                                 style="width: 90px; height: 130px; object-fit: cover;">
+                            <p class="mt-2 mb-0">{{ anime.titulo|truncatechars:18 }}</p>
+                            <small class="text-secondary">{{ anime.fecha_fin }}</small>
+                        </div>
+                    {% endfor %}
+                </div>
             {% else %}
                 <p class="text-secondary">No has visto nada recientemente.</p>
             {% endif %}
+
         </div>
     </div>
 
-    <!-- ESTADÍSTICAS -->
     <div class="col-12 col-lg-6">
         <div class="p-4 bg-dark border border-secondary rounded shadow-sm h-100">
             <h3 class="fw-bold mb-3">Estadísticas</h3>
 
-            <p class="text-secondary">Próximamente: estadísticas del usuario.</p>
+            <p><strong>Vistos:</strong> {{ total_vistos }}</p>
+            <p><strong>Viendo:</strong> {{ total_viendo }}</p>
+            <p><strong>Whitelist:</strong> {{ total_whitelist }}</p>
+            <p><strong>Dropeados:</strong> {{ total_dropeados }}</p>
+
         </div>
     </div>
 

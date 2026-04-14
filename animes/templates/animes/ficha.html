@@ -23,23 +23,35 @@
                 <p class="text-secondary fst-italic">{{ api_data.title_jp }}</p>
             {% endif %}
 
-            <div class="my-2">
-                {% for i in "12345" %}
-                    {% if forloop.counter <= anime.rating %}
-                        <span class="text-warning fs-4">★</span>
-                    {% else %}
-                        <span class="text-secondary fs-4">★</span>
-                    {% endif %}
-                {% endfor %}
-            </div>
-
             {% if api_data.score %}
-                <p class="text-info">Score MAL: {{ api_data.score }}</p>
+                <p class="text-info">Score: {{ api_data.score }}</p>
             {% endif %}
 
-            <a href="{% url 'animes:edit' anime.id %}" class="btn btn-outline-light mt-2">
-                Editar anime
-            </a>
+            {% if anime_guardado %}
+                <button class="btn btn-warning mt-2"
+                        data-bs-toggle="modal"
+                        data-bs-target="#editAnimeModal"
+                        data-id="{{ anime_guardado.id }}"
+                        data-titulo="{{ anime_guardado.titulo }}"
+                        data-imagen="{{ anime_guardado.imagen_url }}"
+                        data-estado="{{ anime_guardado.estado }}"
+                        data-rating="{{ anime_guardado.rating }}"
+                        data-episodios_totales="{{ anime_guardado.episodios_totales }}"
+                        data-episodios_vistos="{{ anime_guardado.episodios_vistos }}">
+                    Editar anime
+                </button>
+
+            {% else %}
+                <button class="btn btn-outline-light mt-2"
+                        data-bs-toggle="modal"
+                        data-bs-target="#addAnimeModal"
+                        data-titulo="{{ anime.titulo }}"
+                        data-apiid="{{ anime.mal_id }}"
+                        data-imagen="{{ anime.imagen_url }}"
+                        data-episodios="{{ anime.episodios }}">
+                    Añadir a mi lista
+                </button>
+            {% endif %}
 
         </div>
 
@@ -56,30 +68,30 @@
 
         <ul class="text-secondary">
             {% if api_data.episodes %}
-                <li>Episodios: {{ api_data.episodes }}</li>
+                <li><strong>Episodios:</strong> {{ api_data.episodes }}</li>
             {% endif %}
+
             {% if api_data.year %}
-                <li>Año: {{ api_data.year }}</li>
+                <li><strong>Año de emisión:</strong> {{ api_data.year }}</li>
             {% endif %}
+
             {% if api_data.status %}
-                <li>Estado: {{ api_data.status }}</li>
+                <li><strong>Estado:</strong>
+                    {% if api_data.status == "Finished Airing" %} Finalizado
+                    {% elif api_data.status == "Currently Airing" %} En emisión
+                    {% elif api_data.status == "Not yet aired" %} Aún no emitido
+                    {% else %} {{ api_data.status }}
+                    {% endif %}
+                </li>
             {% endif %}
+
             {% if api_data.genres %}
-                <li>Géneros: {{ api_data.genres|join:", " }}</li>
+                <li><strong>Géneros:</strong> {{ api_data.genres|join:", " }}</li>
             {% endif %}
         </ul>
+
     </div>
 
-    {% if api_data.trailer %}
-    <div class="mt-4">
-        <h4 class="text-white">Trailer</h4>
-        <iframe width="100%" height="315"
-                src="{{ api_data.trailer }}"
-                frameborder="0"
-                allowfullscreen>
-        </iframe>
-    </div>
-    {% endif %}
     {% endif %}
 
     <div class="mt-4">
@@ -87,5 +99,8 @@
     </div>
 
 </div>
+
+{% include "animes/add_anime.html" %}
+{% include "animes/edit_anime.html" %}
 
 {% endblock %}
