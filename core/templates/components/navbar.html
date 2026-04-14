@@ -5,14 +5,15 @@
     <div class="container">
 
         <a class="navbar-brand d-flex align-items-center" href="/">
-            <img src="{% static 'img/logo.png' %}" alt="Logo" height="40">
+            <img src="{% static 'img/logo.png' %}" alt="YourSideANime" height="65">
             <span class="ms-2 fw-bold">YourSideAnime</span>
         </a>
 
-        <form class="d-flex mx-auto w-50" method="GET" action="{% url 'animes:home' %}">
+        <form class="d-flex mx-auto w-50" method="GET" action="{% url 'animes:buscar' %}">
             <input class="form-control me-2" type="search" name="q" placeholder="Buscar anime..." aria-label="Buscar">
             <button class="btn btn-outline-light" type="submit">Buscar</button>
         </form>
+
 
         <div class="dropdown">
 
@@ -22,8 +23,7 @@
                 <img src="{% if request.user.avatar %}{{ request.user.avatar.url }}{% else %}{% static 'img/default_avatar.png' %}{% endif %}"
                  alt="Perfil"
                  height="35"
-                 class="rounded-circle"
-                 style="width: 35px; height: 35px; object-fit: cover;">
+                 class="avatar-nav">
 
             </a>
 
@@ -76,3 +76,5 @@
 
     </div>
 </nav>
+
+

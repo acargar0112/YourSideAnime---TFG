@@ -3,13 +3,8 @@
 {% block title %}Vistos · YourSideAnime{% endblock %}
 
 {% block rating %}
-<div class="stars mt-2 text-center">
-    {% for i in "12345" %}
-        {% if forloop.counter <= anime.rating %}
-            <span class="star filled">★</span>
-        {% else %}
-            <span class="star">★</span>
-        {% endif %}
-    {% endfor %}
-</div>
+    {% include "components/rating.html" with rating=anime.rating %}
 {% endblock %}
+
+
+

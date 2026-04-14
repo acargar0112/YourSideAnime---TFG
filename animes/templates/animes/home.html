@@ -16,15 +16,15 @@
     <div class="carousel-inner rounded shadow">
 
         <div class="carousel-item active">
-            <img src="{% static 'img/carrusel1.png' %}" class="d-block w-100" alt="Slide 1">
+            <img src="{% static 'img/hxh.png' %}" class="d-block w-100" alt="Slide 1">
         </div>
 
         <div class="carousel-item">
-            <img src="{% static 'img/carrusel2.png' %}" class="d-block w-100" alt="Slide 2">
+            <img src="{% static 'img/str.jpeg' %}" class="d-block w-100" alt="Slide 2">
         </div>
 
         <div class="carousel-item">
-            <img src="{% static 'img/carrusel3.jpg' %}" class="d-block w-100" alt="Slide 3">
+            <img src="{% static 'img/onepiece.jpg' %}" class="d-block w-100" alt="Slide 3">
         </div>
 
     </div>
@@ -46,7 +46,10 @@
         <div class="p-4 bg-dark border border-secondary rounded shadow-sm h-100">
             <h3 class="fw-bold mb-3">Estadísticas del Perfil</h3>
 
-            <p class="text-secondary">Próximamente: estadísticas del usuario.</p>
+            <p><strong>Vistos:</strong> {{total_vistos }}</p>
+            <p><strong>Viendo:</strong> {{total_viendo }}</p>
+            <p><strong>Whitelist:</strong> {{total_whitelist }}</p>
+            <p><strong>Dropeados:</strong> {{total_dropeados }}</p>
         </div>
     </div>
 
@@ -54,8 +57,21 @@
         <div class="p-4 bg-dark border border-secondary rounded shadow-sm h-100">
             <h3 class="fw-bold mb-3">Ranking de Animes</h3>
 
-            <p class="text-secondary">Próximamente: ranking de animes.</p>
+            {% if ranking %}
+                <div class="d-flex gap-3">
+                    {% for anime in ranking %}
+                        <div class="text-center">
+                            <img src="{{ anime.imagen_url }}" class="rounded" style="width: 90px; height: 130px; object-fit: cover;" alt="anime_ranking">
+                            <p class="mt-2 mb-0">{{ anime.titulo|truncatechars:18 }}</p>
+                            <small class="text-warning">{{ anime.rating }} ★</small>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-secondary">No hay animes con rating aún.</p>
+            {% endif %}
         </div>
+
     </div>
 
 </div>

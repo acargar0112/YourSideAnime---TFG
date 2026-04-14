@@ -33,6 +33,12 @@
                         Añadir
                     </button>
 
+                    {% if anime.api_id %}
+                        <a href="{% url 'animes:ficha' anime.api_id %}" class="btn btn-secondary w-100 mt-2">
+                            Ver ficha
+                        </a>
+                    {% endif %}
+
                 </div>
 
             </div>
