@@ -100,23 +100,49 @@ def add_anime(request):
 
         return redirect("animes:home")
 
-@login_required
 def buscar_anime(request):
     query = request.GET.get("q", "")
-
     resultados = []
 
     if query:
-        url = f"https://api.jikan.moe/v4/anime?q={query}&limit=20"
-        response = requests.get(url).json()
+        query_graphql = """
+        query ($search: String) {
+          Page(perPage: 20) {
+            media(search: $search, type: ANIME) {
+              id
+              title {
+                romaji
+              }
+              episodes
+              coverImage {
+                large
+              }
+            }
+          }
+        }
+        """
 
-        for item in response.get("data", []):
-            resultados.append({
-                "api_id": item.get("mal_id"),
-                "titulo": item.get("title"),
-                "imagen": item["images"]["jpg"]["image_url"],
-                "episodios": item.get("episodes") or 0,
-            })
+        variables = {"search": query}
+
+        try:
+            response = requests.post(
+                "https://graphql.anilist.co",
+                json={"query": query_graphql, "variables": variables},
+                timeout=10
+            ).json()
+
+            media = response["data"]["Page"]["media"]
+
+            for item in media:
+                resultados.append({
+                    "api_id": item["id"],
+                    "titulo": item["title"]["romaji"],
+                    "imagen": item["coverImage"]["large"],
+                    "episodios": item["episodes"] or 0,
+                })
+
+        except Exception as e:
+            print("Error AniList:", e)
 
     return render(request, "animes/buscar.html", {
         "query": query,
@@ -141,44 +167,65 @@ def anime_edit(request, pk):
 
         return redirect(request.POST.get("return_url", "animes:home"))
 
+@login_required
 def api_ficha(request, api_id):
-    response = requests.get(f"https://api.jikan.moe/v4/anime/{api_id}")
 
-    if response.status_code != 200:
-        return render(request, "animes/ficha.html", {"error": "No se pudo cargar la información."})
-
-    data = response.json().get("data", {})
-
-    sinopsis_en = data.get("synopsis") or ""
-    try:
-        sinopsis_es = GoogleTranslator(source="auto", target="es").translate(sinopsis_en)
-    except:
-        sinopsis_es = sinopsis_en
-
-    anime = {
-        "mal_id": data.get("mal_id"),
-        "titulo": data.get("title"),
-        "titulo_jp": data.get("title_japanese"),
-        "imagen_url": data.get("images", {}).get("jpg", {}).get("large_image_url"),
-        "sinopsis": sinopsis_es,
-        "episodios": data.get("episodes"),
-        "year": data.get("year"),
-        "status": data.get("status"),
-        "genres": [g["name"] for g in data.get("genres", [])],
-        "score": data.get("score"),
-        "trailer": data.get("trailer", {}).get("embed_url"),
+    query = """
+    query ($id: Int) {
+      Media(id: $id, type: ANIME) {
+        id
+        title { romaji english native }
+        description(asHtml: false)
+        episodes
+        seasonYear
+        status
+        averageScore
+        genres
+        coverImage { large }
+      }
     }
+    """
 
-    anime_guardado = None
-    if request.user.is_authenticated:
-        anime_guardado = Anime.objects.filter(user=request.user, api_id=api_id).first()
+    try:
+        data = requests.post(
+            "https://graphql.anilist.co",
+            json={"query": query, "variables": {"id": int(api_id)}},
+            timeout=10
+        ).json()["data"]["Media"]
+
+        descripcion_es = GoogleTranslator(
+            source="auto", target="es"
+        ).translate(data["description"] or "")
+
+        anime = {
+            "titulo": data["title"]["romaji"] or data["title"]["english"],
+            "imagen_url": data["coverImage"]["large"],
+            "sinopsis": descripcion_es,
+            "episodios": data["episodes"],
+            "mal_id": data["id"],
+        }
+
+        api_data = {
+            "title_jp": data["title"]["native"],
+            "score": data["averageScore"],
+            "episodes": data["episodes"],
+            "year": data["seasonYear"],
+            "status": data["status"],
+            "genres": data["genres"],
+        }
+
+    except Exception as e:
+        print("Error AniList ficha:", e)
+        anime = None
+        api_data = None
+
+    anime_guardado = request.user.animes.filter(api_id=api_id).first()
 
     return render(request, "animes/ficha.html", {
         "anime": anime,
-        "api_data": anime,
+        "api_data": api_data,
         "anime_guardado": anime_guardado,
     })
-
 
 
 
