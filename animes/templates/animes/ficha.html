@@ -62,6 +62,32 @@
         <p class="text-secondary">{{ anime.sinopsis|safe }}</p>
     </div>
 
+    <h3 class="mt-4">Reseñas</h3>
+
+    {% if anime_guardado %}
+    <form method="post" action="{% url 'animes:add_review' anime_guardado.id %}">
+        {% csrf_token %}
+        <textarea name="texto" class="form-control bg-dark text-white border-secondary" rows="3"
+                  placeholder="Escribe tu reseña..."></textarea>
+        <button class="btn btn-primary mt-2">Publicar reseña</button>
+    </form>
+    {% else %}
+    <p class="text-secondary">Añade este anime a tu lista para poder escribir reseñas.</p>
+    {% endif %}
+
+    <hr class="border-secondary">
+
+    {% for r in reviews %}
+    <div class="mb-3">
+        <strong>{{ r.user.username }}</strong>
+        <p class="mb-1">{{ r.texto }}</p>
+        <small class="text-secondary">{{ r.creado }}</small>
+    </div>
+    {% empty %}
+    <p class="text-secondary">Aún no hay reseñas.</p>
+    {% endfor %}
+
+
     {% if api_data %}
     <div class="mt-4">
         <h4 class="text-white">Información adicional</h4>
