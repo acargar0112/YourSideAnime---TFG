@@ -15,5 +15,7 @@ urlpatterns = [
     path("anime/<int:pk>/delete/", views.anime_delete, name="delete"),
     path("buscar/", views.buscar_anime, name="buscar"),
     path("ficha/<int:api_id>/", views.api_ficha, name="ficha"),
+    path("review/<int:anime_id>/add/", views.add_review, name="add_review"),
+
 
 ]

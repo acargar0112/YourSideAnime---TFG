@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from .models import Anime
+from .models import Anime, Review
 from deep_translator import GoogleTranslator
 import requests
 
@@ -225,7 +225,24 @@ def api_ficha(request, api_id):
         "anime": anime,
         "api_data": api_data,
         "anime_guardado": anime_guardado,
+        "reviews": Review.objects.filter(anime__api_id=api_id).order_by("-creado"),
     })
+
+@login_required
+def add_review(request, anime_id):
+    anime = get_object_or_404(Anime, id=anime_id, user=request.user)
+
+    if request.method == "POST":
+        texto = request.POST.get("texto", "").strip()
+
+        if texto:
+            Review.objects.create(
+                user=request.user,
+                anime=anime,
+                texto=texto
+            )
+
+        return redirect("animes:ficha", api_id=anime.api_id)
 
 
 
