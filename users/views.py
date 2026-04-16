@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
+
+from animes.utils import obtener_estadisticas
 from .models import CustomUser
 from .forms import CustomUserCreationForm
 from django.contrib import messages
@@ -27,24 +29,18 @@ def register(request):
 def profile(request):
     user = request.user
 
-    total_vistos = Anime.objects.filter(user=user, estado="visto").count()
-    total_viendo = Anime.objects.filter(user=user, estado="viendo").count()
-    total_whitelist = Anime.objects.filter(user=user, estado="whitelist").count()
-    total_dropeados = Anime.objects.filter(user=user, estado="dropeado").count()
+    stats = obtener_estadisticas(user)
 
     recientes = Anime.objects.filter(
         user=user,
         estado="visto",
         fecha_fin__isnull=False
-    ).order_by("-fecha_fin")[:4]
+    ).order_by("-fecha_fin")[:6]
 
     return render(request, "users/profile.html", {
         "user": user,
         "recientes": recientes,
-        "total_vistos": total_vistos,
-        "total_viendo": total_viendo,
-        "total_whitelist": total_whitelist,
-        "total_dropeados": total_dropeados,
+        **stats,
     })
 
 
