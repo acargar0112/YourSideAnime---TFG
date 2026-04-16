@@ -5,30 +5,26 @@ from .models import Anime, Review
 from deep_translator import GoogleTranslator
 import requests
 
+from .utils import obtener_estadisticas
+
 
 @login_required
 def home(request):
     user = request.user
+
+    stats = obtener_estadisticas(user)
 
     animes_list = Anime.objects.filter(user=user).order_by("-creado")
     paginator = Paginator(animes_list, 12)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
-    total_vistos = Anime.objects.filter(user=user, estado="visto").count()
-    total_viendo = Anime.objects.filter(user=user, estado="viendo").count()
-    total_whitelist = Anime.objects.filter(user=user, estado="whitelist").count()
-    total_dropeados = Anime.objects.filter(user=user, estado="dropeados").count()
-
-    ranking = Anime.objects.filter(user=user, estado="visto", rating__gt=0).order_by("-rating")[:4]
+    ranking = Anime.objects.filter(user=user, estado="visto", rating__gt=0).order_by("-rating")[:6]
 
     return render(request, "animes/home.html", {
         "page_obj": page_obj,
-        "total_vistos": total_vistos,
-        "total_viendo": total_viendo,
-        "total_whitelist": total_whitelist,
-        "total_dropeados": total_dropeados,
         "ranking": ranking,
+        **stats,
     })
 
 @login_required

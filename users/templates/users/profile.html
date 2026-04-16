@@ -34,12 +34,10 @@
             <h3 class="fw-bold mb-3">Vistos recientemente</h3>
 
             {% if recientes %}
-                <div class="d-flex gap-3">
+                <div class="row g-3">
                     {% for anime in recientes %}
-                        <div class="text-center">
-                            <img src="{{ anime.imagen_url }}"
-                                 class="rounded"
-                                 style="width: 90px; height: 130px; object-fit: cover;">
+                        <div class="col-4 col-lg-2 text-center">
+                            <img src="{{ anime.imagen_url }}" class="rounded" style="width: 90px; height: 130px; object-fit: cover;">
                             <p class="mt-2 mb-0">{{ anime.titulo|truncatechars:18 }}</p>
                             <small class="text-secondary">{{ anime.fecha_fin }}</small>
                         </div>
@@ -56,10 +54,36 @@
         <div class="p-4 bg-dark border border-secondary rounded shadow-sm h-100">
             <h3 class="fw-bold mb-3">Estadísticas</h3>
 
-            <p><strong>Vistos:</strong> {{ total_vistos }}</p>
-            <p><strong>Viendo:</strong> {{ total_viendo }}</p>
-            <p><strong>Whitelist:</strong> {{ total_whitelist }}</p>
-            <p><strong>Dropeados:</strong> {{ total_dropeados }}</p>
+            <p class="mb-3"><strong>Total de animes:</strong> {{ total_animes }}</p>
+
+            <p class="mt-3 mb-1"><strong>Vistos:</strong> {{ total_vistos }}</p>
+            <div class="progress bg-secondary">
+                <div class="progress-bar bg-success" role="progressbar"
+                     style="width: {{ pct_vistos }}%">
+                </div>
+            </div>
+
+            <p class="mt-3 mb-1"><strong>Viendo:</strong> {{ total_viendo }}</p>
+            <div class="progress bg-secondary">
+                <div class="progress-bar bg-info" role="progressbar"
+                     style="width: {{ pct_viendo }}%">
+                </div>
+            </div>
+
+            <p class="mt-3 mb-1"><strong>Whitelist:</strong> {{ total_whitelist }}</p>
+            <div class="progress bg-secondary">
+                <div class="progress-bar bg-warning" role="progressbar"
+                     style="width: {{ pct_whitelist }}%">
+                </div>
+            </div>
+
+            <p class="mt-3 mb-1"><strong>Dropeados:</strong> {{ total_dropeados }}</p>
+            <div class="progress bg-secondary">
+                <div class="progress-bar bg-danger" role="progressbar"
+                     style="width: {{ pct_dropeados }}%">
+                </div>
+            </div>
+
 
         </div>
     </div>
