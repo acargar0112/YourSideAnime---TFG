@@ -19,7 +19,7 @@ class Anime(models.Model):
     imagen_url = models.URLField(blank=True, null=True)
     sinopsis = models.TextField(blank=True, null=True)
     estado = models.CharField(max_length=20, choices=ESTADOS, default="viendo")
-    rating = models.PositiveSmallIntegerField(default=0)
+    rating = models.DecimalField(max_digits=2, decimal_places=1, default=0)
     episodios_totales = models.PositiveIntegerField(default=0)
     episodios_vistos = models.PositiveIntegerField(default=0)
     fecha_inicio = models.DateField(blank=True, null=True)

@@ -29,16 +29,20 @@
                                      style="object-fit: cover;">
                             </div>
 
-                            <div id="edit_ratingSection" class="mt-3 d-none">
+                            <div id="edit_ratingSection" class="mt-3 d-none text-center">
                                 <label>Rating:</label>
-                                <div id="edit_ratingStars" class="fs-3">
-                                    {% for i in "12345" %}
-                                        <span class="edit-star text-secondary" data-value="{{ forloop.counter }}">★</span>
-                                    {% endfor %}
-                                </div>
-                                <input type="hidden" name="rating" id="edit_ratingInput" value="0">
-                            </div>
 
+                                <div id="edit_ratingStars" class="fs-3 d-flex gap-1 justify-content-center">
+                                    <i class="bi bi-star edit-star text-secondary" data-value="1"></i>
+                                    <i class="bi bi-star edit-star text-secondary" data-value="2"></i>
+                                    <i class="bi bi-star edit-star text-secondary" data-value="3"></i>
+                                    <i class="bi bi-star edit-star text-secondary" data-value="4"></i>
+                                    <i class="bi bi-star edit-star text-secondary" data-value="5"></i>
+                                </div>
+
+                                <input type="hidden" name="rating" id="edit_ratingInput" value="0">
+
+                            </div>
                         </div>
 
                         <div class="col-12 col-md-8">
@@ -110,16 +114,34 @@ document.addEventListener("DOMContentLoaded", () => {
     const editRatingInput = document.getElementById("edit_ratingInput");
 
     editStars.forEach(star => {
-        star.addEventListener("click", () => {
-            const value = star.dataset.value;
-            editRatingInput.value = value;
+        star.addEventListener("click", (e) => {
+            const rect = star.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const half = x < rect.width / 2;
 
-            editStars.forEach(s => {
-                s.classList.toggle("text-warning", s.dataset.value <= value);
-                s.classList.toggle("text-secondary", s.dataset.value > value);
-            });
+            const base = parseInt(star.dataset.value);
+            const value = half ? base - 0.5 : base;
+
+            editRatingInput.value = value;
+            actualizarEditarEstrella(value);
         });
     });
+
+    function actualizarEditarEstrella(value) {
+        editStars.forEach(star => {
+            const starValue = parseInt(star.dataset.value);
+
+            if (value >= starValue) {
+                star.className = "bi bi-star-fill edit-star text-warning";
+            }
+            else if (value + 0.5 === starValue) {
+                star.className = "bi bi-star-half edit-star text-warning";
+            }
+            else {
+                star.className = "bi bi-star edit-star text-secondary";
+            }
+        });
+    }
 
     const estadoSelect = document.getElementById("edit_estado");
     const ratingSection = document.getElementById("edit_ratingSection");
@@ -168,13 +190,9 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("edit_episodios_totales").value = button.dataset.episodios_totales;
         document.getElementById("edit_previewImagen").src = button.dataset.imagen;
 
-        const rating = button.dataset.rating;
+        const rating = parseFloat(button.dataset.rating);
         editRatingInput.value = rating;
-
-        editStars.forEach(s => {
-            s.classList.toggle("text-warning", s.dataset.value <= rating);
-            s.classList.toggle("text-secondary", s.dataset.value > rating);
-        });
+        actualizarEditarEstrella(rating);
 
         document.getElementById("edit_fecha_inicio").value = button.dataset.fecha_inicio || "";
         document.getElementById("edit_fecha_fin").value = button.dataset.fecha_fin || "";
@@ -183,7 +201,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         document.getElementById("editAnimeForm").action = `/anime/${button.dataset.id}/edit/`;
         document.getElementById("deleteAnimeForm").action = `/anime/${button.dataset.id}/delete/`;
-
 
         actualizarCamposEdit();
     });
