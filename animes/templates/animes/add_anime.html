@@ -31,12 +31,17 @@
 
                             <div id="ratingSection" class="mt-3 d-none">
                                 <label>Rating:</label>
-                                <div id="ratingStars" class="fs-3">
-                                    {% for i in "12345" %}
-                                        <span class="star text-secondary" data-value="{{ forloop.counter }}">★</span>
-                                    {% endfor %}
+
+                                <div id="ratingStars" class="fs-3 d-flex gap-1 justify-content-center">
+                                    <i class="bi bi-star star text-secondary" data-value="1"></i>
+                                    <i class="bi bi-star star text-secondary" data-value="2"></i>
+                                    <i class="bi bi-star star text-secondary" data-value="3"></i>
+                                    <i class="bi bi-star star text-secondary" data-value="4"></i>
+                                    <i class="bi bi-star star text-secondary" data-value="5"></i>
                                 </div>
+
                                 <input type="hidden" name="rating" id="ratingInput" value="0">
+
                             </div>
 
                         </div>
@@ -103,16 +108,34 @@ document.addEventListener("DOMContentLoaded", () => {
     const ratingInput = document.getElementById("ratingInput");
 
     stars.forEach(star => {
-        star.addEventListener("click", () => {
-            const value = star.dataset.value;
-            ratingInput.value = value;
+        star.addEventListener("click", (e) => {
+            const rect = star.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const half = x < rect.width / 2;
 
-            stars.forEach(s => {
-                s.classList.toggle("text-warning", s.dataset.value <= value);
-                s.classList.toggle("text-secondary", s.dataset.value > value);
-            });
+            const base = parseInt(star.dataset.value);
+            const value = half ? base - 0.5 : base;
+
+            ratingInput.value = value;
+            actualizarEstrella(value);
         });
     });
+
+    function actualizarEstrella(value) {
+        stars.forEach(star => {
+            const starValue = parseInt(star.dataset.value);
+
+            if (value >= starValue) {
+                star.className = "bi bi-star-fill star text-warning";
+            }
+            else if (value + 0.5 === starValue) {
+                star.className = "bi bi-star-half star text-warning";
+            }
+            else {
+                star.className = "bi bi-star star text-secondary";
+            }
+        });
+    }
 
     const estadoSelect = document.getElementById("estadoSelect");
     const ratingSection = document.getElementById("ratingSection");
