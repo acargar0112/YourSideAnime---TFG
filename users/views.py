@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
@@ -65,9 +66,16 @@ def profile_edit(request):
         if avatar:
             user.avatar = avatar
 
-        user.save()
+        try:
+            user.full_clean()
+            user.save()
+            messages.success(request, "Perfil actualizado correctamente.")
+            return redirect("users:profile")
 
-        messages.success(request, "Perfil actualizado correctamente.")
-        return redirect("users:profile")
+        except ValidationError as e:
+            for field, msgs in e.message_dict.items():
+                for msg in msgs:
+                    messages.error(request, msg)
+            return redirect("users:profile_edit")
 
     return render(request, "users/profile_edit.html", {"user": user})

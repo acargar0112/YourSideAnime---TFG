@@ -2,6 +2,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from .models import Anime, Review
+from django.contrib import messages
+from django.core.exceptions import ValidationError
 from deep_translator import GoogleTranslator
 import requests
 
@@ -91,7 +93,7 @@ def whitelist(request):
 @login_required
 def add_anime(request):
     if request.method == "POST":
-        Anime.objects.create(
+        anime = Anime(
             user=request.user,
             titulo = request.POST.get("titulo"),
             imagen_url = request.POST.get("imagen_url"),
@@ -105,7 +107,21 @@ def add_anime(request):
 
         )
 
-        return redirect("animes:home")
+        try:
+            anime.full_clean()
+            anime.save()
+            messages.success(request, "Añadido correctamente.")
+            return redirect("animes:ficha", api_id=anime.api_id)
+
+        except ValidationError as e:
+            for field, msgs in e.message_dict.items():
+                for msg in msgs:
+                    messages.error(request, msg)
+
+            return redirect(request.POST.get("return_url", "animes:home"))
+
+    return redirect("animes:home")
+
 
 def buscar_anime(request):
     query = request.GET.get("q", "")
@@ -170,9 +186,20 @@ def anime_edit(request, pk):
         anime.fecha_inicio = request.POST.get("fecha_inicio") or None
         anime.fecha_fin = request.POST.get("fecha_fin") or None
 
-        anime.save()
+        try:
+            anime.full_clean()
+            anime.save()
+            messages.success(request, "Actualizado correctamente.")
+            return redirect(request.POST.get("return_url", "animes:home"))
 
-        return redirect(request.POST.get("return_url", "animes:home"))
+        except ValidationError as e:
+            for field, msgs in e.message_dict.items():
+                for msg in msgs:
+                    messages.error(request, msg)
+
+            return redirect(request.POST.get("return_url", "animes:home"))
+
+    return redirect("animes:home")
 
 @login_required
 def api_ficha(request, api_id):
