@@ -41,46 +41,33 @@
 
 
 <div class="row g-4">
-
+    {% if seguir_dropeado %}
     <div class="col-12 col-lg-6">
         <div class="p-4 bg-dark border border-secondary rounded shadow-sm h-100">
-            <h3 class="fw-bold mb-3">Estadísticas del Perfil</h3>
+            <h3 class="fw-bold mb-3">¿Otra oportunidad?</h3>
 
-            <p class="mb-1"><strong>Total de animes:</strong> {{ total_animes }}</p>
+            <div class="d-flex gap-3 align-items-center">
+                <img src="{{ seguir_dropeado.imagen_url }}" class="rounded" style="width: 120px; height: 170px; object-fit: cover;">
 
-            <p class="mt-3 mb-1"><strong>Vistos:</strong> {{ total_vistos }}</p>
-            <div class="progress bg-secondary">
-                <div class="progress-bar bg-success" role="progressbar"
-                     style="width: {{ pct_vistos }}%">
+                <div class="flex-grow-1">
+                    <h5 class="mb-1">{{ seguir_dropeado.titulo }}</h5>
+
+                    <p class="text-secondary mb-2">
+                        Estado: Dropeado - Episodios {{ seguir_dropeado.episodios_vistos }} / {{ seguir_dropeado.episodios_totales }}
+                    </p>
+
+                    <a href="{% url 'animes:ficha' seguir_dropeado.api_id %}" class="btn btn-light btn-sm">Ver ficha</a>
                 </div>
             </div>
 
-            <p class="mt-3 mb-1"><strong>Viendo:</strong> {{ total_viendo }}</p>
-            <div class="progress bg-secondary">
-                <div class="progress-bar bg-info" role="progressbar"
-                     style="width: {{ pct_viendo }}%">
-                </div>
-            </div>
-
-            <p class="mt-3 mb-1"><strong>Whitelist:</strong> {{ total_whitelist }}</p>
-            <div class="progress bg-secondary">
-                <div class="progress-bar bg-warning" role="progressbar"
-                     style="width: {{ pct_whitelist }}%">
-                </div>
-            </div>
-
-            <p class="mt-3 mb-1"><strong>Dropeados:</strong> {{ total_dropeados }}</p>
-            <div class="progress bg-secondary">
-                <div class="progress-bar bg-danger" role="progressbar"
-                     style="width: {{ pct_dropeados }}%">
-                </div>
-            </div>
+            <a href="{% url 'animes:home' %}" class="btn btn-secondary btn-sm mt-3"><i class="bi bi-dice-5 fs-6"></i></a>
         </div>
     </div>
+    {% endif %}
 
     <div class="col-12 col-lg-6">
         <div class="p-4 bg-dark border border-secondary rounded shadow-sm h-100">
-            <h3 class="fw-bold mb-3">Ranking de Animes</h3>
+            <h3 class="fw-bold mb-3 text-center">Ranking de Animes</h3>
 
             {% if ranking %}
                 <div class="row g-3">
