@@ -5,6 +5,16 @@
 
 {% block content %}
 
+    {% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+            <div class="alert alert-danger alert-dismissable fade show d-flex justify-content-between align-items-center" role="alert">{{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
 <div id="homeCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
 
     <div class="carousel-indicators">
