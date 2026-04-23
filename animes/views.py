@@ -5,14 +5,25 @@ from .models import Anime, Review
 from deep_translator import GoogleTranslator
 import requests
 
-from .utils import obtener_estadisticas
-
 
 @login_required
 def home(request):
     user = request.user
 
-    stats = obtener_estadisticas(user)
+    ultimo_id = request.session.get("ultimo_dropeado")
+
+    qs = Anime.objects.filter(user=user, estado="dropeado")
+
+    if ultimo_id:
+        qs = qs.exclude(id=ultimo_id)
+
+    seguir_dropeado = qs.order_by("?").first()
+
+    if not seguir_dropeado:
+        seguir_dropeado = Anime.objects.filter(user=user, estado="dropeado").order_by("?").first()
+
+    if seguir_dropeado:
+        request.session["ultimo_dropeado"] = seguir_dropeado.id
 
     animes_list = Anime.objects.filter(user=user).order_by("-creado")
     paginator = Paginator(animes_list, 12)
@@ -24,7 +35,7 @@ def home(request):
     return render(request, "animes/home.html", {
         "page_obj": page_obj,
         "ranking": ranking,
-        **stats,
+        "seguir_dropeado": seguir_dropeado,
     })
 
 @login_required
