@@ -24,7 +24,7 @@
 
                             <div class="bg-secondary rounded" style="height: 220px;">
                                 <img id="previewImagen"
-                                     src="{% static 'img/default_anime.png' %}"
+                                     src="{% static 'img/default_anime.jpg' %}"
                                      class="w-100 h-100 rounded"
                                      style="object-fit: cover;">
                             </div>
@@ -104,6 +104,9 @@
 <script>
 document.addEventListener("DOMContentLoaded", () => {
 
+    const modal = document.getElementById("addAnimeModal");
+    if (!modal) return;
+
     const stars = document.querySelectorAll("#ratingStars .star");
     const ratingInput = document.getElementById("ratingInput");
 
@@ -169,7 +172,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     estadoSelect.addEventListener("change", actualizarCampos);
 
-    const modal = document.getElementById("addAnimeModal");
 
     modal.addEventListener("show.bs.modal", event => {
         const button = event.relatedTarget;

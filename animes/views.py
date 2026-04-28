@@ -8,8 +8,15 @@ from deep_translator import GoogleTranslator
 import requests
 
 
-@login_required
 def home(request):
+
+    if not request.user.is_authenticated:
+        return render(request, "animes/home.html", {
+            "page_obj": [],
+            "ranking": [],
+            "seguir_dropeado": None
+        })
+
     user = request.user
 
     ultimo_id = request.session.get("ultimo_dropeado")
@@ -122,7 +129,7 @@ def add_anime(request):
 
     return redirect("animes:home")
 
-
+@login_required
 def buscar_anime(request):
     query = request.GET.get("q", "")
     resultados = []

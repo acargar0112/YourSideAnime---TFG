@@ -5,14 +5,20 @@
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}YourSideAnime{% endblock %}</title>
+    <link rel="icon" type="image/png" href="{% static 'img/logo.png' %}">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 
 <body class="auth-body">
 
-    <div class="auth-container">
+    <div class="auth-logo">
+        <img src="{% static 'img/logo.png' %}" alt="Logo YourSideAnime">
+    </div>
+
+    <div class="auth-card">
         {% block content %}{% endblock %}
     </div>
+
 
 </body>
 </html>
