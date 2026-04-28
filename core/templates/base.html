@@ -8,11 +8,24 @@
 
     <title>{% block title %}YourSideAnime{% endblock %}</title>
 
+    <link rel="icon" type="image/png" href="{% static 'img/logo.png' %}">
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <script>
+        (function() {
+            const tema = localStorage.getItem("theme") || "dark";
+            const esOscuro = tema === "dark";
+
+            document.body.classList.remove("dark-mode", "light-mode");
+            document.body.classList.add(esOscuro ? "dark-mode" : "light-mode");
+        })();
+
+    </script>
 </head>
 
 <body>
@@ -35,6 +48,34 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        function CambioTema() {
+            const esOscuro = document.body.classList.contains("dark-mode");
+            document.body.classList.remove("dark-mode", "light-mode");
+            document.body.classList.add(esOscuro ? "light-mode" : "dark-mode")
+
+            localStorage.setItem("theme", esOscuro ? "light" : "dark");
+
+            document.querySelectorAll(".icono-tema").forEach(icono => {
+                icono.classList.remove("bi-sun-fill", "bi-moon-fill");
+                icono.classList.add(esOscuro ? "bi-moon-fill" : "bi-sun-fill");
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const tema = localStorage.getItem("theme") || "dark";
+            const esOscuro = tema === "dark";
+
+            document.body.classList.remove("dark-mode", "light-mode");
+            document.body.classList.add(esOscuro ? "dark-mode" : "light-mode");
+
+            document.querySelectorAll(".icono-tema").forEach(icono => {
+                icono.classList.remove("bi-sun-fill", "bi-moon-fill");
+                icono.classList.add(esOscuro ? "bi-sun-fill" : "bi-moon-fill");
+            });
+        });
+    </script>
 
     {% block scripts %}
     {% endblock %}

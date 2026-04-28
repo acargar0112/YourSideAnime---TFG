@@ -14,13 +14,16 @@
             <button class="btn btn-outline-light" type="submit">Buscar</button>
         </form>
 
+        <button onclick="CambioTema()" class="btn btn-light me-3">
+            <i class="bi icono-tema"></i>
+        </button>
 
         <div class="dropdown">
 
             <a class="d-flex align-items-center text-white dropdown-toggle" href="#" role="button"
                data-bs-toggle="dropdown" aria-expanded="false">
 
-                <img src="{% if request.user.avatar %}{{ request.user.avatar.url }}{% else %}{% static 'img/default_avatar.png' %}{% endif %}"
+                <img src="{% if request.user.avatar %}{{ request.user.avatar.url }}{% else %}{% static 'img/default_avatar.jpg' %}{% endif %}"
                  alt="Perfil"
                  height="35"
                  class="avatar-nav">
@@ -29,35 +32,41 @@
 
             <ul class="dropdown-menu dropdown-menu-end bg-dark border-secondary">
 
-                <li>
-                    <a class="dropdown-item text-white" href="{% url 'users:profile' %}">Mi Perfil</a>
-                </li>
+                {% if request.user.is_authenticated %}
+                    <li>
+                        <a class="dropdown-item text-white" href="{% url 'users:profile' %}">Mi Perfil</a>
+                    </li>
 
-                <li>
-                    <a class="dropdown-item text-white" href="{% url 'animes:viendo' %}">Viendo</a>
-                </li>
+                    <li>
+                        <a class="dropdown-item text-white" href="{% url 'animes:viendo' %}">Viendo</a>
+                    </li>
 
-                <li>
-                    <a class="dropdown-item text-white" href="{% url 'animes:vistos' %}">Vistos</a>
-                </li>
+                    <li>
+                        <a class="dropdown-item text-white" href="{% url 'animes:vistos' %}">Vistos</a>
+                    </li>
 
-                <li>
-                    <a class="dropdown-item text-white" href="{% url 'animes:dropeados' %}">Dropeados</a>
-                </li>
+                    <li>
+                        <a class="dropdown-item text-white" href="{% url 'animes:dropeados' %}">Dropeados</a>
+                    </li>
 
-                <li>
-                    <a class="dropdown-item text-white" href="{% url 'animes:whitelist' %}">Whitelist</a>
-                </li>
+                    <li>
+                        <a class="dropdown-item text-white" href="{% url 'animes:whitelist' %}">Whitelist</a>
+                    </li>
 
-                <li><hr class="dropdown-divider border-secondary"></li>
+                    <li><hr class="dropdown-divider border-secondary"></li>
 
-                <li>
-                    <form action="{% url 'users:logout' %}" method="post">
-                        {% csrf_token %}
-                        <button type="submit" class="dropdown-item text-danger">Cerrar sesión</button>
-                    </form>
-                </li>
+                    <li>
+                        <form action="{% url 'users:logout' %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="dropdown-item text-danger">Cerrar sesión</button>
+                        </form>
+                    </li>
+                {% else %}
 
+                    <li>
+                        <a class="dropdown-item text-white" href="{% url 'users:login' %}">Iniciar Sesión</a>
+                    </li>
+                {% endif %}
             </ul>
 
         </div>

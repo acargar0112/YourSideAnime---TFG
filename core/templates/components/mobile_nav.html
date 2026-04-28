@@ -1,6 +1,6 @@
 {% load static %}
 
-<div class="container py-3">
+<div class="mobile-header py-3">
 
     <div class="d-flex justify-content-between align-items-center mb-3">
         <a href="/" class="d-flex align-items-center text-white text-decoration-none">
@@ -8,32 +8,47 @@
             <span class="ms-2 fw-bold">YourSideAnime</span>
         </a>
 
-        <a href="{% url 'users:profile' %}">
-            <img src="{% if request.user.avatar %}{{ request.user.avatar.url }}{% else %}{% static 'img/default_avatar.png' %}{% endif %}"
-                 alt="Perfil"
-                 height="35"
-                 class="rounded-circle"
-                 style="width: 35px; height: 35px; object-fit: cover;">
-        </a>
+        <div class="d-flex align-items-center gap-2">
+
+            <button onclick="CambioTema()" class="btn btn-light btn-sm">
+                <i class="bi icono-tema"></i>
+            </button>
+
+            <a href="{% url 'users:profile' %}">
+                <img src="{% if request.user.avatar %}{{ request.user.avatar.url }}{% else %}{% static 'img/default_avatar.jpg' %}{% endif %}"
+                     alt="Perfil"
+                     height="35"
+                     class="rounded-circle"
+                     style="width: 35px; height: 35px; object-fit: cover;">
+            </a>
+
+        </div>
     </div>
 
     <div class="mb-3">
         <button class="btn btn-outline-light w-100" type="button" data-bs-toggle="collapse" data-bs-target="#mobileMenu">
-            ☰ Menú
+            <i class="bi bi-list" style="font-size: 1.8rem;"></i>
         </button>
 
         <div class="collapse mt-2" id="mobileMenu">
             <div class="list-group">
                 <a href="{% url 'animes:home' %}" class="list-group-item list-group-item-action bg-dark text-white">Inicio</a>
-                <a href="{% url 'animes:viendo' %}" class="list-group-item list-group-item-action bg-dark text-white">Viendo</a>
-                <a href="{% url 'animes:vistos' %}" class="list-group-item list-group-item-action bg-dark text-white">Vistos</a>
-                <a href="{% url 'animes:dropeados' %}" class="list-group-item list-group-item-action bg-dark text-white">Dropeados</a>
-                <a href="{% url 'animes:whitelist' %}" class="list-group-item list-group-item-action bg-dark text-white">Whitelist</a>
+
                 {% if request.user.is_authenticated %}
-                <form action="{% url 'users:logout' %}" method="post" class="list-group-item bg-darker p-0">
-                    {% csrf_token %}
-                    <button type="submit" class="w-100 text-start bg-dark text-danger border-0 py-2 px3">Cerrar sesión</button>
-                </form>
+
+                    <a href="{% url 'animes:viendo' %}" class="list-group-item list-group-item-action bg-dark text-white">Viendo</a>
+                    <a href="{% url 'animes:vistos' %}" class="list-group-item list-group-item-action bg-dark text-white">Vistos</a>
+                    <a href="{% url 'animes:dropeados' %}" class="list-group-item list-group-item-action bg-dark text-white">Dropeados</a>
+                    <a href="{% url 'animes:whitelist' %}" class="list-group-item list-group-item-action bg-dark text-white">Whitelist</a>
+                    <form action="{% url 'users:logout' %}" method="post" class="list-group-item bg-darker p-0">
+                        {% csrf_token %}
+                        <button type="submit" class="w-100 text-start bg-dark text-danger border-0 py-2 px3">Cerrar sesión</button>
+                    </form>
+
+                {% else %}
+
+                    <a href="{% url 'users:login' %}" class="list-group-item list-group-item-action bg-dark text-white">Iniciar Sesión</a>
+
                 {% endif %}
             </div>
         </div>

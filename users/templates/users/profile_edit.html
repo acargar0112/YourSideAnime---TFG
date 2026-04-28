@@ -40,19 +40,19 @@
                 </label>
 
                 <div>
-                    <label class="form-label">Nombre</label>
+                    <label class="form-label profile-label">Nombre</label>
                     <input type="text" name="username" class="form-control"
                            value="{{ request.user.username }}">
                 </div>
 
                 <div>
-                    <label class="form-label">Email</label>
+                    <label class="form-label profile-label">Email</label>
                     <input type="email" name="email" class="form-control"
                            value="{{ request.user.email }}">
                 </div>
 
                 <div>
-                    <label class="form-label">Biografía</label>
+                    <label class="form-label profile-label">Biografía</label>
                     <textarea name="bio" rows="4" class="form-control">{{ request.user.bio }}</textarea>
                 </div>
 
