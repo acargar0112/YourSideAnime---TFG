@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
-
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-clj5m9fxjeijd6a)%y=5vryq8@3*vtyav!6*c-k5cc@jn9ak!f'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-clj5m9fxjeijd6a)%y=5vryq8@3*vtyav!6*c-k5cc@jn9ak!f')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -76,9 +76,6 @@ WSGI_APPLICATION = 'YourSideAnime.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-import os
-
-from pathlib import Path
 
 if os.environ.get("USE_SQLITE", "true") == "true":
     DATABASES = {
@@ -150,3 +147,4 @@ LOGIN_URL = '/users/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/users/login/'
 
+CSRF_TRUSTED_ORIGINS = ["https://yoursideanime.duckdns.org",]
