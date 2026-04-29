@@ -10,7 +10,7 @@ def validar_tamano_avatar(archivo):
 
 
 class CustomUser(AbstractUser):
-    avatar = models.ImageField(upload_to="avatars/", default="avatars/default_avatar.jpg", validators=[FileExtensionValidator(["jpg","jpeg","png"]), validar_tamano_avatar])
+    avatar = models.ImageField(upload_to="avatars/", blank=True, null=True, validators=[FileExtensionValidator(["jpg","jpeg","png"]), validar_tamano_avatar])
     bio = models.TextField(blank=True, null=True)
 
     def clean(self):
