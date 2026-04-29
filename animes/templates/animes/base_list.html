@@ -46,7 +46,6 @@
 
                         <div class="anime-overlay d-flex flex-column justify-content-center align-items-center gap-2">
 
-                            <!-- BOTÓN VER -->
                             <button class="btn btn-primary btn-sm"
                                     data-bs-toggle="modal"
                                     data-bs-target="#viewAnimeModal"
@@ -62,7 +61,6 @@
                                 Ver
                             </button>
 
-                            <!-- BOTÓN EDITAR -->
                             <button class="btn btn-light btn-sm"
                                     data-bs-toggle="modal"
                                     data-bs-target="#editAnimeModal"
@@ -95,9 +93,11 @@
 
     </div>
 
-    <div class="text-center mt-4">
-        <button class="btn btn-outline-light px-4">Página siguiente</button>
-    </div>
+    {% if page_obj.paginator.num_pages > 1 %}
+        <div class="mt-4">
+            {% include "components/pagination.html" %}
+        </div>
+    {% endif %}
 
 </div>
 
