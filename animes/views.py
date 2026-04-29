@@ -49,10 +49,14 @@ def home(request):
 
 @login_required
 def viendo(request):
-    animes = Anime.objects.filter(user=request.user, estado="viendo").order_by("-id")
+    animes_list = Anime.objects.filter(user=request.user, estado="viendo").order_by("-id")
+    paginator = Paginator(animes_list, 12)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
 
     context = {
-        "animes": animes,
+        "animes": page_obj,
+        "page_obj": page_obj,
         "active_tab": "viendo",
         "page_title": "Viendo",
     }
@@ -61,10 +65,14 @@ def viendo(request):
 
 @login_required
 def vistos(request):
-    animes = Anime.objects.filter(user=request.user, estado="visto").order_by("-id")
+    animes_list = Anime.objects.filter(user=request.user, estado="visto").order_by("-id")
+    paginator = Paginator(animes_list, 12)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
 
     context = {
-        "animes": animes,
+        "animes": page_obj,
+        "page_obj": page_obj,
         "active_tab": "vistos",
         "page_title": "Vistos",
     }
@@ -74,10 +82,14 @@ def vistos(request):
 
 @login_required
 def dropeados(request):
-    animes = Anime.objects.filter(user=request.user, estado="dropeado").order_by("-id")
+    animes_list = Anime.objects.filter(user=request.user, estado="dropeado").order_by("-id")
+    paginator = Paginator(animes_list, 12)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
 
     context = {
-        "animes": animes,
+        "animes": page_obj,
+        "page_obj": page_obj,
         "active_tab": "dropeados",
         "page_title": "Dropeados",
     }
@@ -87,10 +99,14 @@ def dropeados(request):
 
 @login_required
 def whitelist(request):
-    animes = Anime.objects.filter(user=request.user, estado="whitelist").order_by("-id")
+    animes_list = Anime.objects.filter(user=request.user, estado="whitelist").order_by("-id")
+    paginator = Paginator(animes_list, 12)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
 
     context = {
-        "animes": animes,
+        "animes": page_obj,
+        "page_obj": page_obj,
         "active_tab": "whitelist",
         "page_title": "Whitelist",
     }
