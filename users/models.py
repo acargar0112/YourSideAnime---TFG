@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.core.validators import FileExtensionValidator
 
+
 def validar_tamano_avatar(archivo):
     limite = 2
     if archivo.size > limite * 1024 * 1024:
