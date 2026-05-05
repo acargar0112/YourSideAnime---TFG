@@ -108,11 +108,16 @@
 </div>
 
 <script>
+    /**
+     * MODAL PARA EDITAR
+     Sistema de estrellas | Mostrar o ocultar opciones depende de la categoría | Rellenar los datos no relevantes automaticamente | Predescargar los archivos ya rellenados al añadir el anime
+     **/
 document.addEventListener("DOMContentLoaded", () => {
 
     const editStars = document.querySelectorAll("#edit_ratingStars .edit-star");
     const editRatingInput = document.getElementById("edit_ratingInput");
 
+    // Detectar si el usuario hace clic a la izquierda o derecha para poder asignar medias estrellas.
     editStars.forEach(star => {
         star.addEventListener("click", (e) => {
             const rect = star.getBoundingClientRect();
@@ -127,6 +132,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
+    // Emoticonos de estrellas visual
     function actualizarEditarEstrella(value) {
         editStars.forEach(star => {
             const starValue = parseInt(star.dataset.value);
@@ -150,6 +156,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const episodiosSection = document.getElementById("edit_episodiosSection");
 
     function actualizarCamposEdit() {
+        // Mostrar o ocultar datos dependiendo de la categoría seleccionada.
         const estado = estadoSelect.value;
 
         ratingSection.classList.add("d-none");
@@ -177,6 +184,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const editModal = document.getElementById("editAnimeModal");
 
+    // Se cargan los datos guardados del usuario respecto al anime
     editModal.addEventListener("show.bs.modal", event => {
         const button = event.relatedTarget;
 

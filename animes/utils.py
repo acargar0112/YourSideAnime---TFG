@@ -1,6 +1,24 @@
 from .models import Anime
 
 def obtener_estadisticas(user):
+    """
+    Calcula estadísticas de los animes de un usuario
+
+    Devuelve un diccionario por estado con:
+    - total_vistos
+    - total_viendo
+    - total_whitelist
+    - total_dropeados
+    - total_animes (suma total)
+
+    Porcentajes por estado (viendo, vistos, whitelist y dropeados)
+    - pct_vistos
+    - pct_viendo
+    - pct_whitelist
+    - pct_dropeados
+
+    Return: Diccionario con totales y porcentajes de estado.
+    """
     total_vistos = Anime.objects.filter(user=user, estado="visto").count()
     total_viendo = Anime.objects.filter(user=user, estado="viendo").count()
     total_whitelist = Anime.objects.filter(user=user, estado="whitelist").count()

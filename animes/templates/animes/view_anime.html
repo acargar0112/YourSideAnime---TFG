@@ -59,7 +59,10 @@
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
+    /**
+     Mostrar datos del anime en solo lectura | Ocutar o mostrar detalles depende del estado del anime | Rellenar los datos de todos los campos
+     **/
+    document.addEventListener("DOMContentLoaded", () => {
 
     const viewModal = document.getElementById("viewAnimeModal");
 
@@ -68,16 +71,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const estado = button.dataset.estado;
 
+        // Secciones que se ocultan segun el estado
         const ratingSection = document.getElementById("view_rating_section");
         const episodiosSection = document.getElementById("view_episodios_section");
         const fechaInicioSection = document.getElementById("view_fecha_inicio_section");
         const fechaFinSection = document.getElementById("view_fecha_fin_section");
 
+        // Reseteo
         ratingSection.classList.remove("d-none");
         episodiosSection.classList.remove("d-none");
         fechaInicioSection.classList.remove("d-none");
         fechaFinSection.classList.remove("d-none");
 
+        /**
+         Lógica para mostrar los campos segun el estado:
+         Viendo: sin rating, sin fecha fin
+         Visto: sin episodios vistos
+         Dropeado: sin rating, sin fecha fin
+         Whitelist: Solo se muestra titulo y imagen.
+         **/
         if (estado === "viendo") {
             ratingSection.classList.add("d-none");
             fechaFinSection.classList.add("d-none");
@@ -99,10 +111,12 @@ document.addEventListener("DOMContentLoaded", () => {
             fechaFinSection.classList.add("d-none");
         }
 
+        // Rellenar datos del modal
         document.getElementById("view_imagen").src = button.dataset.imagen;
         document.getElementById("view_titulo").textContent = button.dataset.titulo;
         document.getElementById("view_estado").textContent = estado;
 
+        // Rating: Mostrar "-", si es 0 o null.
         const rating = button.dataset.rating;
         document.getElementById("view_rating").textContent =
             rating > 0 ? rating + " / 5" : "—";
@@ -110,6 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("view_episodios_vistos").textContent = button.dataset.episodios_vistos;
         document.getElementById("view_episodios_totales").textContent = button.dataset.episodios_totales;
 
+        // Fecha: Si no hay valor muestra "-"
         document.getElementById("view_fecha_inicio").textContent = button.dataset.fecha_inicio || "—";
         document.getElementById("view_fecha_fin").textContent = button.dataset.fecha_fin || "—";
     });
