@@ -1,19 +1,21 @@
-version: "3.9"
+version: "3.9" # Versión del formato de Docker Compose
 
 services:
   db:
-    image: mysql:8.0
-    container_name: mysql_db
-    restart: always
+    image: mysql:8.0 # Imagen oficial de MySQL 8.0
+    container_name: mysql_db # Nombre del contenedor
+    restart: always # Reinicia automático
     environment:
+      # Variables de entorno cargadas desde .env
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
-      - mysql_data:/var/lib/mysql
+      - mysql_data:/var/lib/mysql # Volumen persistente para guardar la BD
     ports:
       - "3306:3306"
+    # Healthcheck para asegurarse de que MySQL está listo antes de arrancar Django y no haya problemas en el arranque.
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
       interval: 5s
@@ -22,38 +24,43 @@ services:
       start_period: 10s
 
   web:
-    build: .
+    build: . # Construye la imagen usando el Dockerfile
     container_name: django_app
     env_file:
-      - .env
+      - .env # Carga variables de entorno desde .env
+    # Aplica migraciones y arranca Gunicorn como servidor WSGI
     command: >
       sh -c "python manage.py migrate &&
              gunicorn YourSideAnime.wsgi:application --bind 0.0.0.0:8000"
     volumes:
-      - static_volume:/app/staticfiles
-      - media_volume:/app/media
+      - static_volume:/app/staticfiles # Archivos estáticos
+      - media_volume:/app/media # Archivos subidos por usuarios (avatares)
     depends_on:
       db:
-        condition: service_healthy
+        condition: service_healthy # Django solo arranca cuando MySQL está listo
     expose:
       - "8000"
 
   nginx:
-    image: nginx:latest
+    image: nginx:latest # Imagen oficial de Nginx
     container_name: nginx_server
     ports:
-      - "80:80"
-      - "443:443"
+      - "80:80" # HTTP
+      - "443:443" # HTTPS
     volumes:
+      # Configuración personalizada de Nginx
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      # Acceso a los archivos estáticos y media generados por Django
       - static_volume:/app/staticfiles
       - media_volume:/app/media
+      # Certificados SSL generados por Certbot
       - /etc/letsencrypt/live/yoursideanime.duckdns.org:/etc/letsencrypt/live/yoursideanime.duckdns.org:ro
       - /etc/letsencrypt/archive/yoursideanime.duckdns.org:/etc/letsencrypt/archive/yoursideanime.duckdns.org:ro
     depends_on:
-      - web
+      - web # Nginx arranca después de Django
 
 volumes:
+  # Volumenes persistentes
   mysql_data:
   static_volume:
   media_volume:

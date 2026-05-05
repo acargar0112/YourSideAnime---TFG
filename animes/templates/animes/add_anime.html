@@ -102,14 +102,20 @@
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
+    /**
+     * MODAL PARA AÑADIR
+     Sistema de estrellas | Mostrar o ocultar opciones depende de la categoría | Rellenar los datos no relevantes automaticamente
+     **/
+    document.addEventListener("DOMContentLoaded", () => {
 
+    // Comprobación: Si no existe, no ejecutamos nada.
     const modal = document.getElementById("addAnimeModal");
     if (!modal) return;
 
     const stars = document.querySelectorAll("#ratingStars .star");
     const ratingInput = document.getElementById("ratingInput");
 
+    // Detectar si el usuario hace clic a la izquierda o derecha para poder asignar medias estrellas.
     stars.forEach(star => {
         star.addEventListener("click", (e) => {
             const rect = star.getBoundingClientRect();
@@ -124,6 +130,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
+    // Emoticonos de estrellas visual
     function actualizarEstrella(value) {
         stars.forEach(star => {
             const starValue = parseInt(star.dataset.value);
@@ -147,6 +154,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const episodiosSection = document.getElementById("episodiosSection");
 
     function actualizarCampos() {
+        // Mostrar o ocultar datos dependiendo de la categoría seleccionada.
         const estado = estadoSelect.value;
 
         ratingSection.classList.add("d-none");
@@ -172,7 +180,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     estadoSelect.addEventListener("change", actualizarCampos);
 
-
+    // Se rellenan datos necesarios, que no hace falta que los rellene el usuario.
     modal.addEventListener("show.bs.modal", event => {
         const button = event.relatedTarget;
 

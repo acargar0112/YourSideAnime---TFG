@@ -9,7 +9,16 @@ import requests
 
 
 def home(request):
+    """
+    Página principal del usuario
 
+    Si el usuario no ha iniciado sesión muestra una versión básica del home.
+    Si esta autenticado puede:
+    - Anime aleatorio dropeado para recomendar continuar
+    - Estadísticas del usuario
+    - Menu desplegable para poder navegar por la página
+    - Un buscador para poder buscar los animes y añadirlos a tu lista
+    """
     if not request.user.is_authenticated:
         return render(request, "animes/home.html", {
             "page_obj": [],
@@ -49,6 +58,9 @@ def home(request):
 
 @login_required
 def viendo(request):
+    """
+    Retorna página de estado "viendo" (viendo.html), con paginación y título correspondiente.
+    """
     animes_list = Anime.objects.filter(user=request.user, estado="viendo").order_by("-id")
     paginator = Paginator(animes_list, 12)
     page_number = request.GET.get("page")
@@ -65,6 +77,9 @@ def viendo(request):
 
 @login_required
 def vistos(request):
+    """
+    Retorna página de estado "vistos" (vistos.html), con paginación y título correspondiente.
+    """
     animes_list = Anime.objects.filter(user=request.user, estado="visto").order_by("-id")
     paginator = Paginator(animes_list, 12)
     page_number = request.GET.get("page")
@@ -82,6 +97,9 @@ def vistos(request):
 
 @login_required
 def dropeados(request):
+    """
+    Retorna página de estado "dropeado" (dropeado.html), con paginación y título correspondiente.
+    """
     animes_list = Anime.objects.filter(user=request.user, estado="dropeado").order_by("-id")
     paginator = Paginator(animes_list, 12)
     page_number = request.GET.get("page")
@@ -99,6 +117,9 @@ def dropeados(request):
 
 @login_required
 def whitelist(request):
+    """
+    Retorna página de estado "whitelist" (whitelist.html), con paginación y título correspondiente.
+    """
     animes_list = Anime.objects.filter(user=request.user, estado="whitelist").order_by("-id")
     paginator = Paginator(animes_list, 12)
     page_number = request.GET.get("page")
@@ -115,6 +136,19 @@ def whitelist(request):
 
 @login_required
 def add_anime(request):
+    """
+    Añade un anime a la lista del usuario
+
+    Solo acepta metodo POST.
+    Crea un objeto Anime con los datos enviados desde el formulario del modal.
+    Ejecuta validaciones personalizadas mediante full_clean() y guarda el anime si es válido.
+
+    En caso de error:
+    - Muestra mensajes de validación
+    - Redirige a la URL indicada en "return_url".
+
+    Retorna a la ficha del anime(ficha.html) o a la home(home.html).
+    """
     if request.method == "POST":
         anime = Anime(
             user=request.user,
@@ -147,6 +181,19 @@ def add_anime(request):
 
 @login_required
 def buscar_anime(request):
+    """
+    Busca animes en AniList usando GraphQL.
+
+    Obtiene el parámetro 'q' de la querystring y realiza una petición POST a la API de AniList. Procesa los resultados y devuelve una lista con:
+    - api_id
+    - título
+    - imagen
+    - episodios
+
+    Retorna el template (buscar.html),
+    query: texto buscado,
+    resultados: lista de animes encontrados.
+    """
     query = request.GET.get("q", "")
     resultados = []
 
@@ -197,6 +244,17 @@ def buscar_anime(request):
 
 @login_required
 def anime_edit(request, pk):
+    """
+    Editar un anime existente del usuario.
+
+    Solo acepta metodo POST
+    Actualiza los campos del anime con los valores enviados desde el modal.
+    Ejecuta validaciones personalizadas mediante full_clean()
+
+    Devuelve mensajes de error y redirige a la url indicada
+
+    Retorna a la url indicada o al home(home.html)
+    """
     anime = get_object_or_404(Anime, pk=pk, user=request.user)
 
     if request.method == "POST":
@@ -226,7 +284,27 @@ def anime_edit(request, pk):
 
 @login_required
 def api_ficha(request, api_id):
+    """
+    Muestra la ficha detallada de un anime obtenida desde AniList.
 
+    Realiza una consulta GraphQL para obtener:
+    - Titulo
+    - Descripción
+    - Episodios
+    - Año
+    - Estado
+    - Géneros
+    - Imagen
+
+    Obtiene si existe:
+    - El anime guardado por el usuario
+    - Las reseñas asociadas
+
+    Retorna:
+    - Datos principales del anime
+    - api_data: Información adicional
+    - reviews y anime_guardado
+    """
     query = """
     query ($id: Int) {
       Media(id: $id, type: ANIME) {
@@ -287,6 +365,14 @@ def api_ficha(request, api_id):
 
 @login_required
 def add_review(request, anime_id):
+    """
+    Añade una reseña a un anime del usuario.
+
+    Solo acepta metodo POST.
+    Crea una Review si el texto no está vacío
+
+    Retorna a la ficha del anime.
+    """
     anime = get_object_or_404(Anime, id=anime_id, user=request.user)
 
     if request.method == "POST":
@@ -305,6 +391,14 @@ def add_review(request, anime_id):
 
 @login_required
 def anime_delete(request, pk):
+    """
+    Elimina un anime de la lista del usuario.
+
+    Solo acepta metodo POST.
+    Borra el anime y redirige a la URL inficada o al home(home.html)
+
+    Retorna a la URL correspondiente. (return_url)
+    """
     anime = get_object_or_404(Anime, pk=pk, user=request.user)
 
     if request.method == "POST":
