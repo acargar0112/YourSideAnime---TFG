@@ -44,6 +44,9 @@ class Anime(models.Model):
     actualizado = models.DateTimeField(auto_now=True)
 
     def __str__(self):
+        """
+        Representación en el admin
+        """
         return f"{self.titulo} ({self.user.username})"
 
     def clean(self):
@@ -114,4 +117,7 @@ class Review(models.Model):
     creado = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
+        """
+        Representación en el admin
+        """
         return f"Review de {self.user.username} para {self.anime.titulo}"

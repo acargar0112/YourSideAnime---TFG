@@ -11,6 +11,13 @@ from animes.models import Anime
 
 
 def register(request):
+    """
+    Vista de registro
+
+    Si el metodo es un POST, proces el formulario del form.py.
+    Si hay errores lanza un mensaje de error.
+    Si el metodo es un GET, muestra el formulario vacio.
+    """
     if request.method == "POST":
         form = CustomUserCreationForm(request.POST, request.FILES)
         if form.is_valid():
@@ -28,6 +35,13 @@ def register(request):
 
 @login_required
 def profile(request):
+    """
+    Vista del perfil con estadisticas
+
+    Obtiene estadisticas del usuario mediante el utils.py (app) para poder pasarlas al html y utilizarlas.
+    Obtiene los ultimos 6 animes vistos con la fecha de fin para poder usarlo en el html.
+    Renderiza el profile.html con todos los parametros pasados.
+    """
     user = request.user
 
     stats = obtener_estadisticas(user)
@@ -47,6 +61,13 @@ def profile(request):
 
 @login_required
 def profile_edit(request):
+    """
+    Vista para editar el perfil del usuario
+
+    Permite modificar unicamente username, email, bio y avatar
+    Validacion por si el email esta vacio y tambien ejecutamos validaciones del modelo
+    Si hay errores los muestra mediantes mensajes
+    """
     user = request.user
 
     if request.method == "POST":
