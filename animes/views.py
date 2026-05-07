@@ -182,65 +182,11 @@ def add_anime(request):
 @login_required
 def buscar_anime(request):
     """
-    Busca animes en AniList usando GraphQL.
+    Retorna la pagina de buscar.html
 
-    Obtiene el parámetro 'q' de la querystring y realiza una petición POST a la API de AniList. Procesa los resultados y devuelve una lista con:
-    - api_id
-    - título
-    - imagen
-    - episodios
-
-    Retorna el template (buscar.html),
-    query: texto buscado,
-    resultados: lista de animes encontrados.
+    La búsqueda se realiza desde el cliente mediante un fetch() a la API de AniList.
     """
-    query = request.GET.get("q", "")
-    resultados = []
-
-    if query:
-        query_graphql = """
-        query ($search: String) {
-          Page(perPage: 20) {
-            media(search: $search, type: ANIME) {
-              id
-              title {
-                romaji
-              }
-              episodes
-              coverImage {
-                large
-              }
-            }
-          }
-        }
-        """
-
-        variables = {"search": query}
-
-        try:
-            response = requests.post(
-                "https://graphql.anilist.co",
-                json={"query": query_graphql, "variables": variables},
-                timeout=10
-            ).json()
-
-            media = response["data"]["Page"]["media"]
-
-            for item in media:
-                resultados.append({
-                    "api_id": item["id"],
-                    "titulo": item["title"]["romaji"],
-                    "imagen": item["coverImage"]["large"],
-                    "episodios": item["episodes"] or 0,
-                })
-
-        except Exception as e:
-            print("Error AniList:", e)
-
-    return render(request, "animes/buscar.html", {
-        "query": query,
-        "resultados": resultados
-    })
+    return render(request, "animes/buscar.html", {})
 
 @login_required
 def anime_edit(request, pk):
