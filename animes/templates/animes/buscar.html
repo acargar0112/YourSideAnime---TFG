@@ -5,6 +5,18 @@
 
   <h2 id="tituloBusqueda" class="mb-4"></h2>
 
+  <div id="mensajeInicial" class="text-center py-5">
+    <i class="bi bi-search" style="font-size: 3rem; color: #6c63ff;"></i>
+    <p class="mt-3 text-secondary fs-5">Usa el buscador de arriba para buscar los animes correctamente.</p>
+  </div>
+
+  <div id="spinner" class="text-center py-5 d-none">
+    <div class="spinner-border" style="color: #6c63ff; width: 3rem; height: 3rem;" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+    <p class="mt-3 text-secondary">Buscando animes...</p>
+  </div>
+
   <div id="mensajeError" class="alert alert-danger d-none"></div>
   <div id="resultados" class="row g-4"></div>
 
@@ -33,13 +45,18 @@
     const contenedor = document.getElementById("resultados");
     const error = document.getElementById("mensajeError");
     const titulo = document.getElementById("tituloBusqueda");
+    const spinner = document.getElementById("spinner");
+    const mensajeInicial = document.getElementById("mensajeInicial");
 
     // Cambia el título mostrando la búsqueda realizada
     titulo.textContent = `Resultados para "${q}"`;
     // Limpia resultados
     contenedor.innerHTML = "";
-    // Oculta el mensaje de error si este estaba visible
+    // Ocultamos los mensajes
     error.classList.add("d-none");
+    mensajeInicial.classList.add("d-none");
+
+    spinner.classList.remove("d-none");
 
     try {
       // Petición POST a la API de AniList
@@ -55,6 +72,9 @@
       const data = await respon.json();
       // Extraemos el array de animes
       const resultados = data.data.Page.media;
+
+      // Ocultamos el spinner una vez esta la respuesta de la API
+      spinner.classList.add("d-none");
 
       // Validación por si no hay resultados
       if (resultados.length === 0) {
@@ -86,6 +106,7 @@
 
     } catch (e) {
       // Si ocurre un error en la API y esta no nos devuelve nada, muestra un mensaje de error
+      spinner.classList.add("d-none");
       error.textContent = "Error al conectar con AniList. Inténtalo nuevamente.";
       error.classList.remove("d-none");
     }
@@ -95,7 +116,10 @@
   window.addEventListener("DOMContentLoaded", () => {
     const parametros = new URLSearchParams(window.location.search);
     const q = parametros.get("q");
-    if (q) buscar(q);
+    if (q) {
+      document.getElementById("mensajeInicial").classList.add("d-none");
+      buscar(q);
+    }
   });
 </script>
 {% endblock %}
