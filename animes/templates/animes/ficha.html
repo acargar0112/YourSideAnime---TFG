@@ -46,7 +46,8 @@
                         data-estado="{{ anime_guardado.estado }}"
                         data-rating="{{ anime_guardado.rating }}"
                         data-episodios_totales="{{ anime_guardado.episodios_totales }}"
-                        data-episodios_vistos="{{ anime_guardado.episodios_vistos }}">
+                        data-episodios_vistos="{{ anime_guardado.episodios_vistos }}"
+                        data-return-url="{{ request.path }}">
                     Editar anime
                 </button>
 
@@ -73,7 +74,7 @@
 
     <h3 class="mt-4">Reseñas</h3>
 
-    {% if anime_guardado %}
+    {% if anime_guardado and anime_guardado.estado != "whitelist" %}
     <form method="post" action="{% url 'animes:add_review' anime_guardado.id %}">
         {% csrf_token %}
         <textarea name="texto" class="form-control bg-dark text-white border-secondary" rows="3"
@@ -81,7 +82,7 @@
         <button class="btn btn-primary mt-2">Publicar reseña</button>
     </form>
     {% else %}
-    <p class="text-secondary">Añade este anime a tu lista para poder escribir reseñas.</p>
+    <p class="text-secondary">Añade este anime a tu lista para poder escribir reseñas. (Whitelist no cuenta)</p>
     {% endif %}
 
     <hr class="border-secondary">
@@ -89,9 +90,30 @@
     {% for r in reviews %}
     <div class="mb-3">
         <strong>{{ r.user.username }}</strong>
+        {% if r.user == request.user %}
+        <form method="post" action="{% url 'animes:edit_review' r.id %}" class="mt-1">
+            {% csrf_token %}
+            <textarea name="texto" class="form-control bg-dark text-white border-secondary" rows="2">{{ r.texto }}</textarea>
+            <button type="submit" class="btn btn-warning btn-sm mt-1">
+                <i class="bi bi-pencil"></i> Guardar
+            </button>
+        </form>
+        {% else %}
         <p class="mb-1">{{ r.texto }}</p>
+        {% endif %}
+
         <small class="text-secondary">{{ r.creado }}</small>
+
+        {% if r.user == request.user or request.user.is_superuser %}
+        <form method="post" action="{% url 'animes:delete_review' r.id %}" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-sm mt-1">
+                <i class="bi bi-trash"></i> Borrar
+            </button>
+        </form>
+        {% endif %}
     </div>
+    <hr class="border-secondary">
     {% empty %}
     <p class="text-secondary">Aún no hay reseñas.</p>
     {% endfor %}
