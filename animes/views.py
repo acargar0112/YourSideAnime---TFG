@@ -351,3 +351,38 @@ def anime_delete(request, pk):
         return_url = request.POST.get("return_url", "animes:home")
         anime.delete()
         return redirect(return_url)
+
+
+@login_required
+def delete_review(request, review_id):
+    """
+    Vista para borrar las reseñas.
+    """
+    review = get_object_or_404(Review, id=review_id)
+
+    if request.user != review.user and not request.user.is_superuser:
+        return redirect("animes:home")
+
+    api_id = review.anime.api_id
+
+    if request.method == "POST":
+        review.delete()
+        messages.success(request, "Reseña eliminada correctamente.")
+
+    return redirect("animes:ficha", api_id=api_id)
+
+@login_required
+def edit_review(request, review_id):
+    """
+    Vista para poder editar las reseñas, pasando el usuario para la valiaación.
+    """
+    review = get_object_or_404(Review, id=review_id, user=request.user)
+
+    if request.method == "POST":
+        texto = request.POST.get("texto", "").strip()
+        if texto:
+            review.texto = texto
+            review.save()
+            messages.success(request, "Reseña actualizada correctamente.")
+
+    return redirect("animes:ficha", api_id=review.anime.api_id)
