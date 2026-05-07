@@ -2,66 +2,100 @@
 
 {% block content %}
 <div class="container py-4">
-    {% if messages %}
-    <div class="container mt-3">
-        {% for message in messages %}
-            <div class="alert alert-danger alert-dismissable fade show d-flex justify-content-between align-items-center" role="alert">{{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        {% endfor %}
-    </div>
-    {% endif %}
 
-    <h2 class="mb-4">Resultados para "{{ query }}"</h2>
+  <h2 id="tituloBusqueda" class="mb-4"></h2>
 
-    {% if resultados %}
-    <div class="row g-4">
-
-        {% for anime in resultados %}
-        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-
-            <div class="card bg-dark text-white h-100 border-secondary">
-
-                <img src="{{ anime.imagen }}" class="card-img-top" style="height: 300px; object-fit: cover;">
-
-                <div class="card-body d-flex flex-column">
-
-                    <h5 class="card-title">{{ anime.titulo }}</h5>
-
-                    <p class="text-secondary small mb-3">
-                        Episodios: {{ anime.episodios|default:"?" }}
-                    </p>
-
-                    <button class="btn btn-outline-light mt-auto"
-                        data-bs-toggle="modal"
-                        data-bs-target="#addAnimeModal"
-                        data-titulo="{{ anime.titulo }}"
-                        data-apiid="{{ anime.api_id }}"
-                        data-imagen="{{ anime.imagen }}"
-                        data-episodios="{{ anime.episodios }}">
-                        Añadir
-                    </button>
-
-                    {% if anime.api_id %}
-                        <a href="{% url 'animes:ficha' anime.api_id %}" class="btn btn-secondary w-100 mt-2">
-                            Ver ficha
-                        </a>
-                    {% endif %}
-
-                </div>
-
-            </div>
-
-        </div>
-        {% endfor %}
-
-    </div>
-
-    {% else %}
-        <p class="text-secondary">No se encontraron resultados.</p>
-    {% endif %}
+  <div id="mensajeError" class="alert alert-danger d-none"></div>
+  <div id="resultados" class="row g-4"></div>
 
 </div>
 
 {% include "animes/add_anime.html" %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Consulta GraphQL para buscar animes en AniList
+  const QUERY = `
+    query ($search: String) {
+      Page(perPage: 20) {
+        media(search: $search, type: ANIME) {
+          id
+          title { romaji }
+          episodes
+          coverImage { large }
+        }
+      }
+    }
+  `;
+
+  async function buscar(q) {
+    const contenedor = document.getElementById("resultados");
+    const error = document.getElementById("mensajeError");
+    const titulo = document.getElementById("tituloBusqueda");
+
+    // Cambia el título mostrando la búsqueda realizada
+    titulo.textContent = `Resultados para "${q}"`;
+    // Limpia resultados
+    contenedor.innerHTML = "";
+    // Oculta el mensaje de error si este estaba visible
+    error.classList.add("d-none");
+
+    try {
+      // Petición POST a la API de AniList
+      const respon = await fetch("https://graphql.anilist.co", {
+        method: "POST",
+        // Indicamos que enviamos JSON
+        headers: {"Content-Type": "application/json"},
+        // Enviamos la query y la variable search
+        body: JSON.stringify({query: QUERY, variables: {search: q} })
+      });
+
+      // Convertimos la respuesta a JSON para poder utilizar los datos
+      const data = await respon.json();
+      // Extraemos el array de animes
+      const resultados = data.data.Page.media;
+
+      // Validación por si no hay resultados
+      if (resultados.length === 0) {
+        contenedor.innerHTML = '<p class="text-secondary">No se encontraron resultados.</p>';
+        return;
+      }
+
+      // Estructura del HTML
+      contenedor.innerHTML = resultados.map(anime => `
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+            <div class="card bg-dark text-white h-100 border-secondary">
+                <img src="${anime.coverImage.large}" class="card-img-top" style="height: 300px; object-fit: cover;">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">${anime.title.romaji}</h5>
+                    <p class="text-secondary small mb-3">Episodios: ${anime.episodes ?? "?"}</p>
+                    <button class="btn btn-outline-light mt-auto"
+                        data-bs-toggle="modal"
+                        data-bs-target="#addAnimeModal"
+                        data-titulo="${anime.title.romaji}"
+                        data-apiid="${anime.id}"
+                        data-imagen="${anime.coverImage.large}"
+                        data-episodios="${anime.episodes ?? 0}">Añadir
+                    </button>
+                    <a href="/ficha/${anime.id}/" class="btn btn-secondary w-100 mt-2">Ver ficha</a>
+                </div>
+             </div>
+        </div>
+      `).join("");
+
+    } catch (e) {
+      // Si ocurre un error en la API y esta no nos devuelve nada, muestra un mensaje de error
+      error.textContent = "Error al conectar con AniList. Inténtalo nuevamente.";
+      error.classList.remove("d-none");
+    }
+  }
+
+  // Obtenemos el parámetro de la URL introducido por el buscador del nav, para poder hacer la busqueda
+  window.addEventListener("DOMContentLoaded", () => {
+    const parametros = new URLSearchParams(window.location.search);
+    const q = parametros.get("q");
+    if (q) buscar(q);
+  });
+</script>
 {% endblock %}
