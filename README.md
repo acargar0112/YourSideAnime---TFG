@@ -19,6 +19,8 @@ Es una aplicación web para gestionar tu lista personal de animes (separados por
 
 A continuación estan redactados los pasos para el uso del proyecto en local con docker.
 
+> Es aconsejable utilizar `Debug=True` cuando utilizas el proyecto en local.
+
 ### 1. Clonar el repositorio
 
 ```
