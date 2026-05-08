@@ -14,53 +14,94 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
     <script>
-        (function () {
+        (function() {
+            // Obtiene el tema guardado en localStorage. Si no existe, usa "dark" por defecto.
             const tema = localStorage.getItem("theme") || "dark";
+            const esOscuro = tema === "dark";
+
+            // Limpia clases y aplica la clase correspondiente al tema
             document.body.classList.remove("dark-mode", "light-mode");
-            document.body.classList.add(tema === "dark" ? "dark-mode" : "light-mode");
+            document.body.classList.add(esOscuro ? "dark-mode" : "light-mode");
         })();
+
     </script>
 
     <style>
-      .error-page {
-        min-height: 70vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
+        .error-page {
+            min-height: 70vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-      .error-code {
-        font-size: 8rem;
-        font-weight: 700;
-        color: red;
-        line-height: 1;
-      }
+        .error-code {
+            font-size: 8rem;
+            font-weight: 700;
+            color: red;
+            line-height: 1;
+        }
     </style>
 </head>
 
 <body>
-  <header class="d-none d-md-block">
-    {% include 'components/navbar.html' %}
-  </header>
-  <header class="d-block d-md-none">
-    {% include 'components/mobile_nav.html' %}
-  </header>
+    <header class="d-none d-md-block">
+        {% include 'components/navbar.html' %}
+    </header>
+    <header class="d-block d-md-none">
+        {% include 'components/mobile_nav.html' %}
+    </header>
 
-  <div class="container py-4">
-    <div class="error-page">
-      <div class="text-center">
-        <div class="error-code">500</div>
-        <h2 class="mt-3 mb-2">Error interno del servidor</h2>
-        <p class="text-secondary mb-4">Disculpe las molestia, algo esta fallando en nuestros servidores. Estamos trabajando en ello.</p>
-        <a href="{% url 'animes:home' %}" class="btn btn-primary px-4">Volver al inicio</a>
-      </div>
+    <div class="container py-4">
+        <div class="error-page">
+        <div class="text-center">
+            <div class="error-code">500</div>
+            <h2 class="mt-3 mb-2">Error interno del servidor</h2>
+            <p class="text-secondary mb-4">Disculpe las molestia, algo esta fallando en nuestros servidores. Estamos trabajando en ello.</p>
+            <a href="{% url 'animes:home' %}" class="btn btn-primary px-4">Volver al inicio</a>
+        </div>
+        </div>
     </div>
-  </div>
 
-  <footer class="mt-5">
-    {% include 'components/footer.html' %}
-  </footer>
+    <footer class="mt-5">
+        {% include 'components/footer.html' %}
+    </footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        function CambioTema() {
+            // Detecta si actualmente está en modo oscuro
+            const esOscuro = document.body.classList.contains("dark-mode");
+
+            // Cambia entre el modo oscuro (dark-mode) y el modo claro (light-mode)
+            document.body.classList.remove("dark-mode", "light-mode");
+            document.body.classList.add(esOscuro ? "light-mode" : "dark-mode")
+
+            // Guarda el nuevo tema en localStorage
+            localStorage.setItem("theme", esOscuro ? "light" : "dark");
+
+            // Cambia los iconos del botón de cambio de tema
+            document.querySelectorAll(".icono-tema").forEach(icono => {
+                icono.classList.remove("bi-sun-fill", "bi-moon-fill");
+                icono.classList.add(esOscuro ? "bi-moon-fill" : "bi-sun-fill");
+            });
+        }
+
+        // Al cargar la página, aplica el tema guardado en el localStorage y actualiza los iconos dependiendo del tema guardado.
+        document.addEventListener("DOMContentLoaded", () => {
+            const tema = localStorage.getItem("theme") || "dark";
+            const esOscuro = tema === "dark";
+
+            // Aplica el tema al body
+            document.body.classList.remove("dark-mode", "light-mode");
+            document.body.classList.add(esOscuro ? "dark-mode" : "light-mode");
+
+            // Adopta el icono respecto al tema actual
+            document.querySelectorAll(".icono-tema").forEach(icono => {
+                icono.classList.remove("bi-sun-fill", "bi-moon-fill");
+                icono.classList.add(esOscuro ? "bi-sun-fill" : "bi-moon-fill");
+            });
+        });
+    </script>
 </body>
 </html>
