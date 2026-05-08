@@ -1,3 +1,5 @@
+from wsgiref.util import application_uri
+
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
@@ -316,6 +318,7 @@ def add_review(request, anime_id):
 
     Solo acepta metodo POST.
     Crea una Review si el texto no está vacío
+    Validaciones full_clean del modelo
 
     Retorna a la ficha del anime.
     """
@@ -324,12 +327,24 @@ def add_review(request, anime_id):
     if request.method == "POST":
         texto = request.POST.get("texto", "").strip()
 
-        if texto:
-            Review.objects.create(
-                user=request.user,
-                anime=anime,
-                texto=texto
-            )
+        if not texto:
+            messages.error(request, "La reseña no puede ser publicada vacía.")
+            return redirect("animes:ficha", api_id=anime.api_id)
+
+        review = Review(
+            user=request.user,
+            anime=anime,
+            texto=texto
+        )
+
+        try:
+            review.full_clean()
+            review.save()
+            messages.success(request, "Reseña publicada correctamente.")
+
+        except ValidationError as e:
+            for msg in e.messages:
+                messages.error(request, msg)
 
         return redirect("animes:ficha", api_id=anime.api_id)
 
@@ -375,14 +390,32 @@ def delete_review(request, review_id):
 def edit_review(request, review_id):
     """
     Vista para poder editar las reseñas, pasando el usuario para la valiaación.
+
+    Validaciones a la reseña por si esta vacia o no has cambiado su contenido.
+    Validaciones del modelo full clean
     """
     review = get_object_or_404(Review, id=review_id, user=request.user)
 
     if request.method == "POST":
         texto = request.POST.get("texto", "").strip()
-        if texto:
-            review.texto = texto
+
+        if not texto:
+            messages.error(request, "La reseña no puede ser publicada vacía.")
+            return redirect("animes:ficha", api_id=review.anime.api_id)
+
+        if texto == review.texto:
+            messages.error(request, "No has realizado ningún cambio en la reseña.")
+            return redirect("animes:ficha", api_id=review.anime.api_id)
+
+        review.texto = texto
+
+        try:
+            review.full_clean()
             review.save()
             messages.success(request, "Reseña actualizada correctamente.")
+
+        except ValidationError as e:
+            for msg in e.messages:
+                messages.error(request, msg)
 
     return redirect("animes:ficha", api_id=review.anime.api_id)
