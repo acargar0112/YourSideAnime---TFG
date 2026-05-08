@@ -116,6 +116,19 @@ class Review(models.Model):
     texto = models.TextField()
     creado = models.DateTimeField(auto_now_add=True)
 
+    def clean(self):
+        """
+        Validaciones para la Review:
+        - Para que la reseña no esta vacía
+        - Máximo de caracteres
+        """
+
+        if not self.texto or not self.texto.strip():
+            raise ValidationError("La reseña no puede ser publicada vacía.")
+
+        if len(self.texto) > 650:
+            raise ValidationError("La reseña no puede superar los 650 caracteres.")
+
     def __str__(self):
         """
         Representación en el admin
