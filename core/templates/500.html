@@ -13,6 +13,14 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
+    <script>
+        (function () {
+            const tema = localStorage.getItem("theme") || "dark";
+            document.body.classList.remove("dark-mode", "light-mode");
+            document.body.classList.add(tema === "dark" ? "dark-mode" : "light-mode");
+        })();
+    </script>
+
     <style>
       .error-page {
         min-height: 70vh;
