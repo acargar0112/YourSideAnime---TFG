@@ -13,19 +13,6 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
-    <script>
-        (function() {
-            // Obtiene el tema guardado en localStorage. Si no existe, usa "dark" por defecto.
-            const tema = localStorage.getItem("theme") || "dark";
-            const esOscuro = tema === "dark";
-
-            // Limpia clases y aplica la clase correspondiente al tema
-            document.body.classList.remove("dark-mode", "light-mode");
-            document.body.classList.add(esOscuro ? "dark-mode" : "light-mode");
-        })();
-
-    </script>
-
     <style>
         .error-page {
             min-height: 70vh;
@@ -44,6 +31,19 @@
 </head>
 
 <body>
+
+    <script>
+        (function() {
+            // Obtiene el tema guardado en localStorage. Si no existe, usa "dark" por defecto.
+            const tema = localStorage.getItem("theme") || "dark";
+            const esOscuro = tema === "dark";
+
+            // Limpia clases y aplica la clase correspondiente al tema
+            document.body.classList.remove("dark-mode", "light-mode");
+            document.body.classList.add(esOscuro ? "dark-mode" : "light-mode");
+        })();
+
+    </script>
     <header class="d-none d-md-block">
         {% include 'components/navbar.html' %}
     </header>
