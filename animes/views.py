@@ -417,3 +417,4 @@ def edit_review(request, review_id):
                 messages.error(request, msg)
 
     return redirect("animes:ficha", api_id=review.anime.api_id)
+
