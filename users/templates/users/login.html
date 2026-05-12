@@ -30,9 +30,11 @@
         {{ form.username }}
     </div>
 
-    <div class="mb-3">
-        <label class="form-label">Contraseña</label>
-        {{ form.password }}
+    <div class="input-group">
+        <input type="password" name="password" id="password" class="form-control" placeholder="Contraseña">
+        <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('password', this)">
+            <i class="bi bi-eye"></i>
+        </button>
     </div>
 
     <button class="btn btn-primary w-100 mt-3">Entrar</button>
@@ -42,5 +44,19 @@
         <a href="{% url 'users:register' %}">Regístrate</a>
     </p>
 </form>
+
+<script>
+    function togglePassword(inputId, btn) {
+        const input = document.getElementById(inputId);
+        const icon = btn.querySelector('i');
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.replace('bi-eye', 'bi-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.replace('bi-eye-slash', 'bi-eye')
+        }
+    }
+</script>
 
 {% endblock %}

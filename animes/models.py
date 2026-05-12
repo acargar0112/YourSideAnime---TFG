@@ -43,6 +43,9 @@ class Anime(models.Model):
     creado = models.DateTimeField(auto_now_add=True)
     actualizado = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        unique_together = ('user', 'api_id')
+
     def __str__(self):
         """
         Representación en el admin
@@ -53,6 +56,7 @@ class Anime(models.Model):
         """
         Validaciones
 
+        - Error para animes duplicados.
         - La fecha de inicio no puede ser mayor a la de fin
         - Si el estado elegido es "visto", ambas fechas deben estar rellenadas
         - Si el estado es "viendo":
@@ -66,6 +70,10 @@ class Anime(models.Model):
         - El rating debe estar entre 0 y 5. (Valiendo 0.5)
         """
         errors = {}
+
+        if not self.pk:
+            if Anime.objects.filter(user=self.user, api_id=self.api_id).exists():
+                errors["api_id"] = "Ya tienes este anime en tu lista."
 
         if self.fecha_inicio and self.fecha_fin:
             if self.fecha_inicio > self.fecha_fin:
@@ -116,12 +124,19 @@ class Review(models.Model):
     texto = models.TextField()
     creado = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        unique_together = ('user', 'anime')
+
     def clean(self):
         """
         Validaciones para la Review:
         - Para que la reseña no esta vacía
         - Máximo de caracteres
+        - Evitar duplicados
         """
+        if not self.pk:
+            if Review.objects.filter(user=self.user, anime=self.anime).exists():
+                raise ValidationError("Ya has publicado una reseña para este anime.")
 
         if not self.texto or not self.texto.strip():
             raise ValidationError("La reseña no puede ser publicada vacía.")

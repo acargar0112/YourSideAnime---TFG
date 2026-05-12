@@ -5,6 +5,7 @@ from .models import Anime, Review
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from deep_translator import GoogleTranslator
+from django.http import JsonResponse
 import requests
 
 
@@ -417,4 +418,35 @@ def edit_review(request, review_id):
                 messages.error(request, msg)
 
     return redirect("animes:ficha", api_id=review.anime.api_id)
+
+@login_required
+def otra_oportunidad(request):
+    """
+    Devuelve un anime dropeado aleatorio distinto al último
+    """
+    user = request.user
+    ultimo_id = request.session.get("ultimo_dropeado")
+
+    qs = Anime.objects.filter(user=user, estado="dropeado")
+    if ultimo_id:
+        qs = qs.exclude(id=ultimo_id)
+
+    seguir_dropeado = qs.order_by("?").first()
+
+    if not seguir_dropeado:
+        seguir_dropeado = Anime.objects.filter(user=user, estado="dropeado").order_by("?").first()
+
+    if not seguir_dropeado:
+        return JsonResponse({"found": False})
+
+    request.session["ultimo_dropeado"] = seguir_dropeado.id
+
+    return JsonResponse({
+        "found": True,
+        "titulo": seguir_dropeado.titulo,
+        "imagen_url": seguir_dropeado.imagen_url,
+        "episodios_vistos": seguir_dropeado.episodios_vistos,
+        "episodios_totales": seguir_dropeado.episodios_totales,
+        "ficha_url": f"/ficha/{seguir_dropeado.api_id}/",
+    })
 

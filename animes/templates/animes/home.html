@@ -52,25 +52,27 @@
 
 <div class="row g-4">
     {% if seguir_dropeado %}
-    <div class="col-12 col-lg-6">
+    <div class="col-12 col-lg-6" id="otra-oportunidad-wrapper">
         <div class="p-4 estadisticas-cuadrados border border-secondary rounded shadow-sm h-100">
             <h3 class="fw-bold mb-3">¿Otra oportunidad?</h3>
 
-            <div class="d-flex gap-3 align-items-center">
-                <img src="{{ seguir_dropeado.imagen_url }}" class="rounded" style="width: 120px; height: 170px; object-fit: cover;">
+            <div class="d-flex gap-3 align-items-center" id="otra-oportunidad-content">
+                <img src="{{ seguir_dropeado.imagen_url }}" class="rounded" id="op-imagen" style="width: 120px; height: 170px; object-fit: cover;">
 
                 <div class="flex-grow-1">
-                    <h5 class="mb-1">{{ seguir_dropeado.titulo }}</h5>
+                    <h5 class="mb-1" id="op-titulo">{{ seguir_dropeado.titulo }}</h5>
 
-                    <p class="text-secondary mb-2">
+                    <p class="text-secondary mb-2" id="op-episodios">
                         Estado: Dropeado - Episodios {{ seguir_dropeado.episodios_vistos }} / {{ seguir_dropeado.episodios_totales }}
                     </p>
 
-                    <a href="{% url 'animes:ficha' seguir_dropeado.api_id %}" class="btn btn-light btn-sm">Ver ficha</a>
+                    <a href="{% url 'animes:ficha' seguir_dropeado.api_id %}" class="btn btn-light btn-sm" id="op-ficha-link">Ver ficha</a>
                 </div>
             </div>
 
-            <a href="{% url 'animes:home' %}" class="btn btn-secondary btn-sm mt-3"><i class="bi bi-dice-5 fs-6"></i></a>
+            <button class="btn btn-secondary btn-sm mt-3" id="btn-otra-oportunidad">
+                <i class="bi bi-dice-5 fs-6"></i>
+            </button>
         </div>
     </div>
     {% endif %}
@@ -97,5 +99,26 @@
     </div>
 
 </div>
+
+<script>
+    document.getElementById("btn-otra-oportunidad").addEventListener("click", function () {
+        const btn = this;
+        btn.disabled = true;
+
+        fetch("{% url 'animes:otra_oportunidad' %}", {
+            headers: { "X-Requested-With": "XMLHttpRequest" }
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.found) {
+                    document.getElementById("op-imagen").src = data.imagen_url;
+                    document.getElementById("op-titulo").textContent = data.titulo;
+                    document.getElementById("op-episodios").textContent = `Estado: Dropeado - Episodios ${data.episodios_vistos} / ${data.episodios_totales}`;
+                    document.getElementById("op-ficha-link").href = data.ficha_url;
+                }
+            })
+            . finally(() => {btn.disabled = false; });
+    });
+</script>
 
 {% endblock %}
