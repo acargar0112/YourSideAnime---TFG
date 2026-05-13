@@ -247,17 +247,27 @@ Extiendo el modelo de usuario de Django con:
 | Tecnología                  | Versión | Uso                                                                        |
 |-----------------------------|---------|----------------------------------------------------------------------------|
 | **Python**                  | 3.12    | Lenguaje base del backend                                                  |
-| **Django**                  | Latest  | Framework web principal                                                    |
+| **Django**                  | 6.03    | Framework web principal                                                    |
 | **MySQL**                   | 8.0     | Base de datos relacional                                                   |
+| **SQLite**                  | 3.53.1  | Base de datos usada en desarrollo local sin Docker                         |       
 | **Gunicorn**                | Latest  | Servidor WSGI para producción                                              |
-| **Nginx**                   | Latest  | Proxy inverso y servidor de archivos estáticos                             |
+| **Nginx**                   | 1.29.6  | Proxy inverso y servidor de archivos estáticos                             |
 | **Docker / Docker Compose** | -       | Ejecutar la aplicación en contenedores y gestionar varios servicios juntos |
 | **Bootstrap**               | 5.3.3   | Framework CSS para el diseño responsive y estilos                          |
 | **Bootstrap Icons**         | 1.11.3  | Librería de iconos                                                         |
 | **Poppins (Google Fonts)**  | -       | Tipografía principal                                                       |
 | **Pillow**                  | Latest  | Procesamiento de imágenes (avatares)                                       |
 | **mysqlcliente**            | Latest  | Conector Python para MySQL                                                 |
-| **deep-translator**         | Latest  | Traducción automática, utilizada para la sinopsis                       |
+| **deep-translator**         | Latest  | Traducción automática, utilizada para la sinopsis                          |
+| **AniList GraphQL API**     | Latest  | API utilizada como fuente de datos externa para obtener información de animes  |
+| **Let's Encrypt / Certbot** | Latest  | Certificados SSL gratuitos para servir la aplicación con HTTPS             |
+| **DuckDNS**                 | Latest  | Servicio de DNS dinámico gratuito utilizado para el dominio en producción  |
+| **Git**                     | 2.54.0  | Control de versiones del código fuente del proyecto                        |
+| **AWS**                     | v2      | Despliegue del proyecto (EC2)                                              |
+
+
+
+
 
 ---
 
