@@ -48,28 +48,38 @@
     const spinner = document.getElementById("spinner");
     const mensajeInicial = document.getElementById("mensajeInicial");
 
+    if (!contenedor || !error || !titulo || !spinner) return;
+
     // Cambia el título mostrando la búsqueda realizada
     titulo.textContent = `Resultados para "${q}"`;
     // Limpia resultados
     contenedor.innerHTML = "";
     // Ocultamos los mensajes
     error.classList.add("d-none");
-    mensajeInicial.classList.add("d-none");
+    if (mensajeInicial) mensajeInicial.classList.add("d-none");
 
     spinner.classList.remove("d-none");
 
     try {
-      // Petición POST a la API de AniList
       const respon = await fetch("https://graphql.anilist.co", {
         method: "POST",
         // Indicamos que enviamos JSON
         headers: {"Content-Type": "application/json"},
         // Enviamos la query y la variable search
-        body: JSON.stringify({query: QUERY, variables: {search: q} })
+        body: JSON.stringify({query: QUERY, variables: {search: q}})
       });
+
+      if (!respon.ok) {
+        throw new Error(`HTTP ${respon.status}`);
+      }
 
       // Convertimos la respuesta a JSON para poder utilizar los datos
       const data = await respon.json();
+
+      if (!data?.data?.Page?.media) {
+        throw new Error("Respuesta inesperada de la API");
+      }
+
       // Extraemos el array de animes
       const resultados = data.data.Page.media;
 
@@ -117,7 +127,8 @@
     const parametros = new URLSearchParams(window.location.search);
     const q = parametros.get("q");
     if (q) {
-      document.getElementById("mensajeInicial").classList.add("d-none");
+      const mensajeInicial = document.getElementById("mensajeInicial");
+      if (mensajeInicial) mensajeInicial.classList.add("d-none");
       buscar(q);
     }
   });
