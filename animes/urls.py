@@ -20,4 +20,5 @@ urlpatterns = [
     path("review/<int:review_id>/delete/", views.delete_review, name="delete_review"),
     path("review/<int:review_id>/edit/", views.edit_review, name="edit_review"),
     path("otra-oportunidad/", views.otra_oportunidad, name="otra_oportunidad"),
+    path("api/buscar/", views.proxy_buscar, name="proxy_buscar"),
 ]

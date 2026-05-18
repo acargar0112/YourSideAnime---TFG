@@ -27,20 +27,6 @@
 
 {% block scripts %}
 <script>
-  // Consulta GraphQL para buscar animes en AniList
-  const QUERY = `
-    query ($search: String) {
-      Page(perPage: 20) {
-        media(search: $search, type: ANIME) {
-          id
-          title { romaji }
-          episodes
-          coverImage { large }
-        }
-      }
-    }
-  `;
-
   async function buscar(q) {
     const contenedor = document.getElementById("resultados");
     const error = document.getElementById("mensajeError");
@@ -50,49 +36,35 @@
 
     if (!contenedor || !error || !titulo || !spinner) return;
 
-    // Cambia el título mostrando la búsqueda realizada
     titulo.textContent = `Resultados para "${q}"`;
-    // Limpia resultados
     contenedor.innerHTML = "";
-    // Ocultamos los mensajes
     error.classList.add("d-none");
     if (mensajeInicial) mensajeInicial.classList.add("d-none");
 
     spinner.classList.remove("d-none");
 
     try {
-      const respon = await fetch("https://graphql.anilist.co", {
-        method: "POST",
-        // Indicamos que enviamos JSON
-        headers: {"Content-Type": "application/json"},
-        // Enviamos la query y la variable search
-        body: JSON.stringify({query: QUERY, variables: {search: q}})
-      });
+      const respon = await fetch(`/api/buscar/?q=${encodeURIComponent(q)}`);
 
       if (!respon.ok) {
         throw new Error(`HTTP ${respon.status}`);
       }
 
-      // Convertimos la respuesta a JSON para poder utilizar los datos
       const data = await respon.json();
 
       if (!data?.data?.Page?.media) {
-        throw new Error("Respuesta inesperada de la API");
+        throw new Error("Respuesta inesperada");
       }
 
-      // Extraemos el array de animes
       const resultados = data.data.Page.media;
 
-      // Ocultamos el spinner una vez esta la respuesta de la API
       spinner.classList.add("d-none");
 
-      // Validación por si no hay resultados
       if (resultados.length === 0) {
         contenedor.innerHTML = '<p class="text-secondary">No se encontraron resultados.</p>';
         return;
       }
 
-      // Estructura del HTML
       contenedor.innerHTML = resultados.map(anime => `
         <div class="col-12 col-sm-6 col-md-4 col-lg-3">
             <div class="card bg-dark text-white h-100 border-secondary">
@@ -115,14 +87,12 @@
       `).join("");
 
     } catch (e) {
-      // Si ocurre un error en la API y esta no nos devuelve nada, muestra un mensaje de error
       spinner.classList.add("d-none");
       error.textContent = "Error al conectar con AniList. Inténtalo nuevamente.";
       error.classList.remove("d-none");
     }
   }
 
-  // Obtenemos el parámetro de la URL introducido por el buscador del nav, para poder hacer la busqueda
   window.addEventListener("DOMContentLoaded", () => {
     const parametros = new URLSearchParams(window.location.search);
     const q = parametros.get("q");

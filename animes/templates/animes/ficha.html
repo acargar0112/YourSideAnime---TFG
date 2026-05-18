@@ -32,6 +32,16 @@
                 <p class="text-secondary fst-italic">{{ api_data.title_jp }}</p>
             {% endif %}
 
+            {% if source %}
+              <span class="badge {% if source == 'anilist' %}bg-primary{% else %}bg-warning text-dark{% endif %} mb-2">
+                {% if source == 'anilist' %}
+                  <i class="bi bi-check-circle"></i> AniList
+                {% else %}
+                  <i class="bi bi-exclamation-triangle"></i> Jikan (respaldo)
+                {% endif %}
+              </span>
+            {% endif %}
+
             {% if api_data.score %}
                 <p class="text-info">Puntuación: {{ api_data.score }}/100</p>
             {% endif %}

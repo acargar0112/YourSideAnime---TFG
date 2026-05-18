@@ -232,25 +232,9 @@ def anime_edit(request, pk):
 @login_required
 def api_ficha(request, api_id):
     """
-    Muestra la ficha detallada de un anime obtenida desde AniList.
-
-    Realiza una consulta GraphQL para obtener:
-    - Titulo
-    - Descripción
-    - Episodios
-    - Año
-    - Estado
-    - Géneros
-    - Imagen
-
-    Obtiene si existe:
-    - El anime guardado por el usuario
-    - Las reseñas asociadas
-
-    Retorna:
-    - Datos principales del anime
-    - api_data: Información adicional
-    - reviews y anime_guardado
+    Muestra la ficha detallada de un anime.
+    Intenta AniList primero, si falla usa Jikan como respaldo.
+    Muestra un badge indicando qué API se está usando.
     """
     query = """
     query ($id: Int) {
@@ -268,12 +252,25 @@ def api_ficha(request, api_id):
     }
     """
 
+    anime = None
+    api_data = None
+    source = None
+
+    # Intento 1: AniList
     try:
-        data = requests.post(
+        response = requests.post(
             "https://graphql.anilist.co",
             json={"query": query, "variables": {"id": int(api_id)}},
             timeout=10
-        ).json()["data"]["Media"]
+        )
+        if not response.ok:
+            raise Exception(f"HTTP {response.status_code}")
+
+        json_data = response.json()
+        if not json_data.get("data") or not json_data["data"].get("Media"):
+            raise Exception("Respuesta inesperada de AniList")
+
+        data = json_data["data"]["Media"]
 
         descripcion_es = GoogleTranslator(
             source="auto", target="es"
@@ -296,10 +293,68 @@ def api_ficha(request, api_id):
             "genres": data["genres"],
         }
 
+        source = "anilist"
+
     except Exception as e:
-        print("Error AniList ficha:", e)
-        anime = None
-        api_data = None
+        print("AniList ficha caída, usando Jikan:", e)
+
+    # Intento 2: Jikan como respaldo
+    if anime is None:
+        try:
+            response = requests.get(
+                f"https://api.jikan.moe/v4/anime/{api_id}",
+                timeout=10
+            )
+
+            # Buscamos por el título guardado del usuario
+            if not response.ok:
+                anime_guardado = request.user.animes.filter(api_id=api_id).first()
+                if anime_guardado:
+                    search_resp = requests.get(
+                        f"https://api.jikan.moe/v4/anime?q={anime_guardado.titulo}&limit=1",
+                        timeout=10
+                    )
+                    if search_resp.ok:
+                        resultados = search_resp.json().get("data", [])
+                        if resultados:
+                            data = resultados[0]
+                        else:
+                            raise Exception("No encontrado en Jikan")
+                    else:
+                        raise Exception("Jikan búsqueda falló")
+                else:
+                    raise Exception(f"HTTP {response.status_code}")
+            else:
+                data = response.json().get("data", {})
+
+            descripcion_raw = data.get("synopsis") or ""
+            descripcion_es = GoogleTranslator(
+                source="auto", target="es"
+            ).translate(descripcion_raw)
+
+            anime = {
+                "titulo": data.get("title"),
+                "imagen_url": data.get("images", {}).get("jpg", {}).get("large_image_url"),
+                "sinopsis": descripcion_es,
+                "episodios": data.get("episodes"),
+                "mal_id": api_id,
+            }
+
+            api_data = {
+                "title_jp": data.get("title_japanese"),
+                "score": data.get("score"),
+                "episodes": data.get("episodes"),
+                "year": data.get("year"),
+                "status": data.get("status"),
+                "genres": [g["name"] for g in data.get("genres", [])],
+            }
+
+            source = "jikan"
+
+        except Exception as e:
+            print("Error también en Jikan ficha:", e)
+            anime = None
+            api_data = None
 
     anime_guardado = request.user.animes.filter(api_id=api_id).first()
 
@@ -308,6 +363,7 @@ def api_ficha(request, api_id):
         "api_data": api_data,
         "anime_guardado": anime_guardado,
         "reviews": Review.objects.filter(anime__api_id=api_id).order_by("-creado"),
+        "source": source,
     })
 
 @login_required
@@ -450,3 +506,89 @@ def otra_oportunidad(request):
         "ficha_url": f"/ficha/{seguir_dropeado.api_id}/",
     })
 
+@login_required
+def proxy_buscar(request):
+    """
+    Proxy para la búsqueda. Intenta AniList primero, si falla usa Jikan (MAL) como respaldo.
+    Cuando usa Jikan, busca el ID de AniList equivalente para que la ficha funcione.
+    """
+    q = request.GET.get("q", "")
+
+    # Intento 1: AniList
+    anilist_query = """
+    query ($search: String) {
+      Page(perPage: 20) {
+        media(search: $search, type: ANIME) {
+          id
+          title { romaji }
+          episodes
+          coverImage { large }
+        }
+      }
+    }
+    """
+    try:
+        response = requests.post(
+            "https://graphql.anilist.co",
+            json={"query": anilist_query, "variables": {"search": q}},
+            timeout=10
+        )
+        if not response.ok:
+            raise Exception(f"HTTP {response.status_code}")
+        data = response.json()
+        if not data.get("data") or not data["data"].get("Page"):
+            raise Exception("Respuesta inesperada de AniList")
+        return JsonResponse(data)
+
+    except Exception as e:
+        print("AniList caída, usando Jikan como respaldo:", e)
+
+    # Intento 2: Jikan como respaldo
+    try:
+        response = requests.get(
+            f"https://api.jikan.moe/v4/anime?q={q}&limit=20",
+            timeout=10
+        )
+        if not response.ok:
+            raise Exception(f"HTTP {response.status_code}")
+
+        jikan_data = response.json()
+
+        media = []
+        for anime in jikan_data.get("data", []):
+            titulo = anime["title"]
+
+            # Buscamos el ID de AniList usando el título del anime
+            anilist_id = None
+            try:
+                anilist_resp = requests.post(
+                    "https://graphql.anilist.co",
+                    json={
+                        "query": """
+                        query ($search: String) {
+                          Media(search: $search, type: ANIME) { id }
+                        }
+                        """,
+                        "variables": {"search": titulo}
+                    },
+                    timeout=5
+                )
+                if anilist_resp.ok:
+                    anilist_json = anilist_resp.json()
+                    anilist_id = anilist_json.get("data", {}).get("Media", {}).get("id")
+            except Exception:
+                pass
+
+            media.append({
+                # Si encontramos ID de AniList lo usamos
+                "id": anilist_id if anilist_id else anime["mal_id"],
+                "title": {"romaji": titulo},
+                "episodes": anime.get("episodes"),
+                "coverImage": {"large": anime["images"]["jpg"]["large_image_url"]}
+            })
+
+        return JsonResponse({"data": {"Page": {"media": media}}})
+
+    except Exception as e:
+        print("Error también en Jikan:", e)
+        return JsonResponse({"error": "Ambas APIs no disponibles"}, status=502)
