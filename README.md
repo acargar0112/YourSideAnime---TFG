@@ -264,6 +264,7 @@ Extiendo el modelo de usuario de Django con:
 | **DuckDNS**                 | Latest  | Servicio de DNS dinámico gratuito utilizado para el dominio en producción  |
 | **Git**                     | 2.54.0  | Control de versiones del código fuente del proyecto                        |
 | **AWS**                     | v2      | Despliegue del proyecto (EC2)                                              |
+| **Jikan**                   | -       | API de respaldo                                                            |
 
 
 
